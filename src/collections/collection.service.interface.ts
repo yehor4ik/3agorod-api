@@ -1,13 +1,13 @@
-import { ICollectionEntity } from './types/ICollectionEntity';
 import { CollectionCreateDto } from './dto/collection-create.dto';
 import { HttpError } from '../errors/http-error.class';
+import { Collection } from './collection.entity';
 
 export interface ICollectionService {
-	getAllCollections: () => Promise<ICollectionEntity[] | HttpError>;
-	createCollection: (dto: CollectionCreateDto) => Promise<ICollectionEntity | HttpError>;
+	getAllCollections: () => Promise<Collection[] | HttpError>;
+	createCollection: (dto: CollectionCreateDto) => Promise<Collection | HttpError>;
 	updateCollectionById: (
 		dto: CollectionCreateDto,
 		collectionId: string,
-	) => Promise<number | HttpError>;
+	) => Promise<Collection | HttpError>;
 	deleteCollectionById: (id: string) => Promise<number | HttpError>;
 }

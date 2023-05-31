@@ -1,5 +1,4 @@
 import { IUsersRepository } from './users.repository.interface';
-import { User } from './user.entity';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { PostgresqlService } from '../database/postgresql.service';
@@ -12,7 +11,7 @@ export class UsersRepository implements IUsersRepository {
 		const res = await this.postgresqlService.client.query(
 			'SELECT * FROM collection ORDER BY id ASC',
 		);
-		return res.rows;
+		return res;
 	}
 
 	async create(): Promise<any> {
@@ -21,7 +20,7 @@ export class UsersRepository implements IUsersRepository {
         VALUES
         ('Summer Collection 2', 'https://example.com/summer.jpg 2') RETURNING *`,
 		);
-		return res.rows;
+		return res;
 	}
 	// async create(user: User): Promise<any> {}
 	// find: (email: string) => Promise<any | null>;

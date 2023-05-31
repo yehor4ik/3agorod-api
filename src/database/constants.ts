@@ -3,7 +3,9 @@ export const INITIALIZATION_POSTGRESQL_DB = `
     (
         id              SERIAL PRIMARY KEY,
         name            VARCHAR(255) NOT NULL,
-        background_image TEXT
+        background_image TEXT,
+        created_at        DATE,
+        updated_at        DATE
     );
 
     CREATE TABLE IF NOT EXISTS Image

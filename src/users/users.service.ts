@@ -19,8 +19,6 @@ export class UsersService implements IUserService {
 		await newUser.setPassword(password, salt);
 		const result = await this.usersRepository.create(); //await this.usersRepository.get();
 		return result;
-		//test
-		//aaa
 	}
 
 	async validateUser(dto: UserLoginDto): Promise<boolean> {
