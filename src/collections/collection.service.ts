@@ -4,7 +4,7 @@ import { TYPES } from '../types';
 import { ICollectionRepository } from './collection.repository.interface';
 import { CollectionCreateDto } from './dto/collection-create.dto';
 import { HttpError } from '../errors/http-error.class';
-import { Collection } from './collection.entity';
+import { Collection } from './collection.model';
 
 @injectable()
 export class CollectionService implements ICollectionService {

@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { PostgresqlService } from '../database/postgresql.service';
 import { CollectionCreateDto } from './dto/collection-create.dto';
-import { Collection } from './collection.entity';
+import { Collection } from './collection.model';
 
 @injectable()
 export class CollectionRepository implements ICollectionRepository {

@@ -9,30 +9,46 @@ import { CollectionCreateDto } from './dto/collection-create.dto';
 import { RequestValidateMiddleware } from '../common/request-validate.middleware';
 import { CollectionUpdateDto } from './dto/collection-update.dto';
 import { HttpError } from '../errors/http-error.class';
-import { Collection } from './collection.entity';
+import { Collection } from './collection.model';
+import { AuthMiddleware } from '../common/auth.middleware';
+import { IConfigService } from '../config/config.service.interface';
 
 @injectable()
 export class CollectionController extends BaseController implements ICollectionController {
 	constructor(
 		@inject(TYPES.ILogger) private loggerService: ILogger,
 		@inject(TYPES.CollectionService) private collectionService: ICollectionService,
+		@inject(TYPES.IConfigService) private configService: IConfigService,
 	) {
 		super(loggerService);
 		this.setNameController(CollectionController.name);
+
+		const secret = this.configService.get<string>('JWT_SECRET_KEY');
 		this.bindRoutes([
 			{ method: 'get', path: '/', func: this.get },
-			{ method: 'delete', path: '/:collectionId', func: this.delete },
+			{
+				method: 'delete',
+				path: '/:collectionId',
+				func: this.delete,
+				middlewares: [new AuthMiddleware(secret)],
+			},
 			{
 				method: 'post',
 				path: '/',
 				func: this.create,
-				middlewares: [new RequestValidateMiddleware(CollectionCreateDto)],
+				middlewares: [
+					new AuthMiddleware(secret),
+					new RequestValidateMiddleware(CollectionCreateDto),
+				],
 			},
 			{
 				method: 'put',
 				path: '/:collectionId',
 				func: this.update,
-				middlewares: [new RequestValidateMiddleware(CollectionUpdateDto)],
+				middlewares: [
+					new AuthMiddleware(secret),
+					new RequestValidateMiddleware(CollectionUpdateDto),
+				],
 			},
 		]);
 	}

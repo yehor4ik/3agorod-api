@@ -4,7 +4,8 @@ import { TYPES } from '../types';
 import { ILogger } from '../logger/logger.interface';
 import { INITIALIZATION_POSTGRESQL_DB } from './constants';
 import { IConfigService } from '../config/config.service.interface';
-import { Collection } from '../collections/collection.entity';
+import { Collection } from '../collections/collection.model';
+import { User } from '../users/user.model';
 
 @injectable()
 export class PostgresqlService {
@@ -29,6 +30,7 @@ export class PostgresqlService {
 			},
 		});
 		this.initCollectionModel();
+		this.initUserModel();
 	}
 
 	async connect(): Promise<void> {
@@ -56,7 +58,7 @@ export class PostgresqlService {
 					primaryKey: true,
 				},
 				name: {
-					type: new DataTypes.STRING(128),
+					type: new DataTypes.STRING(255),
 					allowNull: false,
 				},
 				backgroundImage: {
@@ -70,7 +72,40 @@ export class PostgresqlService {
 				underscored: true,
 				timestamps: true,
 				tableName: 'collection',
-				sequelize: this.client, // passing the `sequelize` instance is required
+				sequelize: this.client,
+			},
+		);
+	}
+
+	initUserModel(): void {
+		User.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				name: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+				},
+				email: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+					unique: true,
+				},
+				password: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'users',
+				sequelize: this.client,
 			},
 		);
 	}

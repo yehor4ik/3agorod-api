@@ -1,5 +1,5 @@
 import { CollectionCreateDto } from './dto/collection-create.dto';
-import { Collection } from './collection.entity';
+import { Collection } from './collection.model';
 import { CollectionUpdateDto } from './dto/collection-update.dto';
 
 export interface ICollectionRepository {

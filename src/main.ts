@@ -7,7 +7,7 @@ import { ILogger } from './logger/logger.interface';
 import { TYPES } from './types';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { IUserController } from './users/user.controller.interface';
-import { IUserService } from './users/user.service.interface';
+import { IUserService } from './users/users.service.interface';
 import { UsersService } from './users/users.service';
 import { IConfigService } from './config/config.service.interface';
 import { ConfigService } from './config/config.service';

@@ -1,4 +1,14 @@
 export const INITIALIZATION_POSTGRESQL_DB = `
+    CREATE TABLE IF NOT EXISTS Users
+    (
+        id              SERIAL PRIMARY KEY,
+        email            VARCHAR(255) NOT NULL UNIQUE,
+        name            VARCHAR(255) NOT NULL,
+        password          VARCHAR(255) NOT NULL,
+        created_at        DATE,
+        updated_at        DATE
+    );
+
     CREATE TABLE IF NOT EXISTS Collection
     (
         id              SERIAL PRIMARY KEY,
