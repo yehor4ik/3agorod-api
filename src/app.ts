@@ -12,12 +12,18 @@ import { PostgresqlService } from './database/postgresql.service';
 import { CollectionController } from './collections/collection.controller';
 import { ICollectionService } from './collections/collection.service.interface';
 import { ICollectionRepository } from './collections/collection.repository.interface';
+import cors from 'cors';
+
+interface ICorsOptions {
+	origin: string;
+}
 
 @injectable()
 export class App {
 	app: Express;
 	server: Server;
 	port: number;
+	corsOptions: ICorsOptions;
 
 	constructor(
 		@inject(TYPES.ILogger) private logger: ILogger,
@@ -33,6 +39,9 @@ export class App {
 	) {
 		this.app = express();
 		this.port = 8000;
+		this.corsOptions = {
+			origin: 'http://localhost:3000',
+		};
 	}
 
 	useMiddleware(): void {
@@ -48,8 +57,13 @@ export class App {
 		this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
 	}
 
+	useCors(): void {
+		this.app.use(cors(this.corsOptions));
+	}
+
 	public async init(): Promise<void> {
 		this.useMiddleware();
+		this.useCors();
 		this.useRoutes();
 		this.useExceptionFilters();
 		await this.postgresqlService.connect();

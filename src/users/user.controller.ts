@@ -20,7 +20,12 @@ export class UserController extends BaseController implements IUserController {
 		super(loggerService);
 		this.setNameController(UserController.name);
 		this.bindRoutes([
-			{ method: 'post', path: '/login', func: this.login },
+			{
+				method: 'post',
+				path: '/login',
+				func: this.login,
+				middlewares: [new RequestValidateMiddleware(UserLoginDto)],
+			},
 			{
 				method: 'post',
 				path: '/register',
@@ -30,20 +35,25 @@ export class UserController extends BaseController implements IUserController {
 		]);
 	}
 
-	login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {
-		// next(new HttpError(401, 'Error login'));
-		this.ok(res, '33333');
-	}
-
 	async register(
 		{ body }: Request<{}, {}, UserRegisterDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const result = await this.userService.createUser(body);
-		if (!result) {
-			return next(new HttpError(422, 'This user has already exist'));
-		}
-		this.ok(res, result);
+		const createdUser = await this.userService.createUser(body);
+		const isError = createdUser instanceof HttpError;
+
+		isError ? next(createdUser) : this.ok(res, createdUser);
+	}
+
+	async login(
+		{ body }: Request<{}, {}, UserRegisterDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.userService.loginUser(body);
+		const isError = result instanceof HttpError;
+
+		isError ? next(result) : this.ok(res, result);
 	}
 }

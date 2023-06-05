@@ -1,8 +1,7 @@
-import { User } from './user.entity';
+import { User } from './user.model';
+import { UserRegisterDto } from './dto/user-register.dto';
 
 export interface IUsersRepository {
-	//TODO замість any повинен бути можель повертаїмой сущності
-	get: () => Promise<any>;
-	create: () => Promise<any>;
-	// find: (email: string) => Promise<any | null>;
+	createUser: (dto: UserRegisterDto) => Promise<User | null>;
+	findUserByEmail: (email: string) => Promise<User | null>;
 }
