@@ -9,5 +9,5 @@ export interface ICollectionService {
 		dto: CollectionCreateDto,
 		collectionId: string,
 	) => Promise<Collection | HttpError>;
-	deleteCollectionById: (id: string) => Promise<number | HttpError>;
+	deleteCollectionById: (id: string) => Promise<null | HttpError>;
 }

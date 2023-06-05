@@ -10,5 +10,5 @@ export interface ICollectionRepository {
 		currentCollection: Collection,
 		dto: CollectionUpdateDto,
 	) => Promise<Collection | null>;
-	deleteCollection: (id: number) => Promise<number | null>;
+	deleteCollection: (id: number) => Promise<null>;
 }

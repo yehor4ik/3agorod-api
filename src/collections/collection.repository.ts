@@ -10,7 +10,8 @@ export class CollectionRepository implements ICollectionRepository {
 	constructor(@inject(TYPES.PostgresqlService) private postgresqlService: PostgresqlService) {}
 
 	async getAllCollections(): Promise<Collection[]> {
-		return (await Collection.findAll()) ?? [];
+		const collections = await Collection.findAll();
+		return collections ?? [];
 	}
 
 	async createCollection(dto: CollectionCreateDto): Promise<Collection | null> {
@@ -37,10 +38,8 @@ export class CollectionRepository implements ICollectionRepository {
 		return res ?? null;
 	}
 
-	async deleteCollection(id: number): Promise<number | null> {
-		const res = await Collection.destroy({ where: { id } });
-
-		if (res) return id;
+	async deleteCollection(id: number): Promise<null> {
+		await Collection.destroy({ where: { id } });
 
 		return null;
 	}

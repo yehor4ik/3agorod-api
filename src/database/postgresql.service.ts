@@ -15,12 +15,12 @@ export class PostgresqlService {
 		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IConfigService) private readonly configService: IConfigService,
 	) {
-		const host = this.configService.get<string>('POSTGRESQL_HOST') || 'postgresql';
-		const port = this.configService.get<number>('POSTGRESQL_PORT') || 5432;
-		const database = this.configService.get<string>('POSTGRESQL_DB') || 'shop_db';
-		const user = this.configService.get<string>('POSTGRESQL_USER') || 'admin';
-		const password = this.configService.get<string>('POSTGRESQL_PASSWORD') || 'mypassword!!';
-		const dialect = this.configService.get<Dialect>('POSTGRESQL_DRIVER') || 'postgres';
+		const host = this.configService.get<string>('POSTGRESQL_HOST');
+		const port = this.configService.get<number>('POSTGRESQL_PORT');
+		const database = this.configService.get<string>('POSTGRESQL_DB');
+		const user = this.configService.get<string>('POSTGRESQL_USER');
+		const password = this.configService.get<string>('POSTGRESQL_PASSWORD');
+		const dialect = this.configService.get<Dialect>('POSTGRESQL_DRIVER');
 		this.client = new Sequelize(database, user, password, {
 			host,
 			port,
