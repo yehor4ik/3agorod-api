@@ -1,3 +1,5 @@
+import { ImageRepository } from './images/image.repository';
+
 export const TYPES = {
 	Application: Symbol.for('Application'),
 	ILogger: Symbol.for('ILogger'),
@@ -10,4 +12,7 @@ export const TYPES = {
 	CollectionController: Symbol.for('CollectionController'),
 	CollectionService: Symbol.for('CollectionService'),
 	CollectionRepository: Symbol.for('CollectionRepository'),
+	ImageController: Symbol.for('ImageController'),
+	ImageService: Symbol.for('ImageService'),
+	ImageRepository: Symbol.for('ImageRepository'),
 };

@@ -21,14 +21,20 @@ export const INITIALIZATION_POSTGRESQL_DB = `
     CREATE TABLE IF NOT EXISTS Image
     (
         id  SERIAL PRIMARY KEY,
-        url TEXT
+        url TEXT NOT NULL,
+        filename VARCHAR(255) NOT NULL,
+        size INTEGER NOT NULL,
+        created_at        DATE,
+        updated_at        DATE
     );
 
     CREATE TABLE IF NOT EXISTS Price
     (
         id       SERIAL PRIMARY KEY,
         value    NUMERIC,
-        currency VARCHAR(3) NOT NULL
+        currency VARCHAR(3) NOT NULL,
+        created_at        DATE,
+        updated_at        DATE
     );
 
     CREATE TABLE IF NOT EXISTS Stock
@@ -37,6 +43,8 @@ export const INITIALIZATION_POSTGRESQL_DB = `
         size     VARCHAR(2) NOT NULL,
         quantity INTEGER,
         price_id  INTEGER,
+        created_at        DATE,
+        updated_at        DATE,
         FOREIGN KEY (price_id) REFERENCES Price (id)
     );
 
@@ -48,6 +56,8 @@ export const INITIALIZATION_POSTGRESQL_DB = `
         image_id      INTEGER,
         stock_id      INTEGER,
         collection_id INTEGER,
+        created_at        DATE,
+        updated_at        DATE,
         FOREIGN KEY (stock_id) REFERENCES Stock (id),
         FOREIGN KEY (image_id) REFERENCES Image (id),
         FOREIGN KEY (collection_id) REFERENCES Collection (id)

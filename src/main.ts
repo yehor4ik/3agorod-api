@@ -20,6 +20,12 @@ import { ICollectionService } from './collections/collection.service.interface';
 import { CollectionService } from './collections/collection.service';
 import { ICollectionRepository } from './collections/collection.repository.interface';
 import { CollectionRepository } from './collections/collection.repository';
+import { IImageController } from './images/image.controller.interface';
+import { ImageController } from './images/image.controller';
+import { IImageService } from './images/image.service.interface';
+import { ImageService } from './images/image.service';
+import { IImageRepository } from './images/image.repository.interface';
+import { ImageRepository } from './images/image.repository';
 
 export interface IBootstrapReturn {
 	appContainer: Container;
@@ -37,6 +43,9 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ICollectionController>(TYPES.CollectionController).to(CollectionController);
 	bind<ICollectionService>(TYPES.CollectionService).to(CollectionService);
 	bind<ICollectionRepository>(TYPES.CollectionRepository).to(CollectionRepository);
+	bind<IImageController>(TYPES.ImageController).to(ImageController);
+	bind<IImageService>(TYPES.ImageService).to(ImageService);
+	bind<IImageRepository>(TYPES.ImageRepository).to(ImageRepository);
 	bind<App>(TYPES.Application).to(App);
 });
 

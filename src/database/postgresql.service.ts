@@ -6,6 +6,7 @@ import { INITIALIZATION_POSTGRESQL_DB } from './constants';
 import { IConfigService } from '../config/config.service.interface';
 import { Collection } from '../collections/collection.model';
 import { User } from '../users/user.model';
+import { Image } from '../images/image.model';
 
 @injectable()
 export class PostgresqlService {
@@ -31,6 +32,7 @@ export class PostgresqlService {
 		});
 		this.initCollectionModel();
 		this.initUserModel();
+		this.initImageModel();
 	}
 
 	async connect(): Promise<void> {
@@ -105,6 +107,38 @@ export class PostgresqlService {
 				underscored: true,
 				timestamps: true,
 				tableName: 'users',
+				sequelize: this.client,
+			},
+		);
+	}
+
+	initImageModel(): void {
+		Image.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				url: {
+					type: new DataTypes.TEXT(),
+					allowNull: false,
+				},
+				filename: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+				},
+				size: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'image',
 				sequelize: this.client,
 			},
 		);

@@ -1,14 +1,10 @@
 import { ICollectionRepository } from './collection.repository.interface';
-import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { PostgresqlService } from '../database/postgresql.service';
+import { injectable } from 'inversify';
 import { CollectionCreateDto } from './dto/collection-create.dto';
 import { Collection } from './collection.model';
 
 @injectable()
 export class CollectionRepository implements ICollectionRepository {
-	constructor(@inject(TYPES.PostgresqlService) private postgresqlService: PostgresqlService) {}
-
 	async getAllCollections(): Promise<Collection[]> {
 		const collections = await Collection.findAll();
 		return collections ?? [];

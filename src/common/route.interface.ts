@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { IMiddleware } from './middleware.interface';
 import { IAuthMiddleware } from './auth.middleware.interface';
+import { Multer } from 'multer';
 
 export interface IControllerRoute<T = {}> {
 	path: string;
 	func: (req: Request<any>, res: Response, next: NextFunction) => void;
 	method: keyof Pick<Router, 'get' | 'post' | 'delete' | 'patch' | 'put'>;
-	middlewares?: (IMiddleware | IAuthMiddleware)[];
+	middlewares?: (IMiddleware | IAuthMiddleware | Multer)[];
 }
 
 export type TReturnExpress = Response<any, Record<string, any>>;

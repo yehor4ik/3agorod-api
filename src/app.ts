@@ -7,12 +7,10 @@ import 'reflect-metadata';
 import { TYPES } from './types';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { json } from 'body-parser';
-import { IConfigService } from './config/config.service.interface';
 import { PostgresqlService } from './database/postgresql.service';
 import { CollectionController } from './collections/collection.controller';
-import { ICollectionService } from './collections/collection.service.interface';
-import { ICollectionRepository } from './collections/collection.repository.interface';
 import cors from 'cors';
+import { ImageController } from './images/image.controller';
 
 interface ICorsOptions {
 	origin: string;
@@ -29,13 +27,15 @@ export class App {
 		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IUserController) private userController: UserController,
 		@inject(TYPES.IExceptionFilter) private readonly exceptionFilter: IExceptionFilter,
-		@inject(TYPES.IConfigService) private readonly configService: IConfigService,
+		// @inject(TYPES.IConfigService) private readonly configService: IConfigService,
 		@inject(TYPES.PostgresqlService) private readonly postgresqlService: PostgresqlService,
 		@inject(TYPES.CollectionController)
 		private readonly collectionController: CollectionController,
-		@inject(TYPES.CollectionService) private readonly collectionService: ICollectionService,
-		@inject(TYPES.CollectionRepository)
-		private readonly collectionRepository: ICollectionRepository,
+		// @inject(TYPES.CollectionService) private readonly collectionService: ICollectionService,
+		// @inject(TYPES.CollectionRepository)
+		// private readonly collectionRepository: ICollectionRepository,
+		@inject(TYPES.ImageController)
+		private readonly imageController: ImageController,
 	) {
 		this.app = express();
 		this.port = 8000;
@@ -51,6 +51,7 @@ export class App {
 	useRoutes(): void {
 		this.app.use('/users', this.userController.router);
 		this.app.use('/collections', this.collectionController.router);
+		this.app.use('/images', this.imageController.router);
 	}
 
 	useExceptionFilters(): void {
