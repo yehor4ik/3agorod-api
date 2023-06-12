@@ -1,9 +1,9 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CollectionCreateDto {
-	@IsString({ message: '"background_image" must be a string' })
-	@IsNotEmpty({ message: '"background_image" is required' })
-	backgroundImage: string;
+	@IsNumber({}, { message: '"backgroundImage" must be a number' })
+	@IsNotEmpty({ message: '"backgroundImage" is required' })
+	backgroundId: number;
 	@IsString({ message: '"name" must be a string' })
 	@IsNotEmpty({ message: '"name" is required' })
 	name: string;

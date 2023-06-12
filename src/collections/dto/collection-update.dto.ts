@@ -2,7 +2,7 @@ import { IsOptional } from 'class-validator';
 
 export class CollectionUpdateDto {
 	@IsOptional()
-	backgroundImage: string;
+	backgroundId: number;
 	@IsOptional()
 	name: string;
 }

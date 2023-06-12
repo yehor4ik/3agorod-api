@@ -9,15 +9,6 @@ export const INITIALIZATION_POSTGRESQL_DB = `
         updated_at        DATE
     );
 
-    CREATE TABLE IF NOT EXISTS Collection
-    (
-        id              SERIAL PRIMARY KEY,
-        name            VARCHAR(255) NOT NULL,
-        background_image TEXT,
-        created_at        DATE,
-        updated_at        DATE
-    );
-
     CREATE TABLE IF NOT EXISTS Image
     (
         id  SERIAL PRIMARY KEY,
@@ -26,6 +17,16 @@ export const INITIALIZATION_POSTGRESQL_DB = `
         size INTEGER NOT NULL,
         created_at        DATE,
         updated_at        DATE
+    );
+
+    CREATE TABLE IF NOT EXISTS Collection
+    (
+        id              SERIAL PRIMARY KEY,
+        name            VARCHAR(255) NOT NULL,
+        background_id    INTEGER,
+        created_at        DATE,
+        updated_at        DATE,
+        FOREIGN KEY (background_id) REFERENCES Image (id)
     );
 
     CREATE TABLE IF NOT EXISTS Price

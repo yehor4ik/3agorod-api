@@ -27,13 +27,9 @@ export class App {
 		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IUserController) private userController: UserController,
 		@inject(TYPES.IExceptionFilter) private readonly exceptionFilter: IExceptionFilter,
-		// @inject(TYPES.IConfigService) private readonly configService: IConfigService,
 		@inject(TYPES.PostgresqlService) private readonly postgresqlService: PostgresqlService,
 		@inject(TYPES.CollectionController)
 		private readonly collectionController: CollectionController,
-		// @inject(TYPES.CollectionService) private readonly collectionService: ICollectionService,
-		// @inject(TYPES.CollectionRepository)
-		// private readonly collectionRepository: ICollectionRepository,
 		@inject(TYPES.ImageController)
 		private readonly imageController: ImageController,
 	) {
