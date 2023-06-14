@@ -61,7 +61,7 @@ export class ImageController extends BaseController implements IImageController 
 
 	async create({ file }: Request, res: Response, next: NextFunction): Promise<void> {
 		if (!file) {
-			next(new HttpError(401, 'File is required field', 'ImageController'));
+			next(new HttpError(401, 'Image is required field', 'ImageController'));
 			return;
 		}
 		const newImage = await this.imageService.createImage(file);

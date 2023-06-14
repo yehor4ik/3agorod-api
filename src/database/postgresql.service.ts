@@ -30,9 +30,9 @@ export class PostgresqlService {
 				timestamps: true,
 			},
 		});
-		this.initCollectionModel();
 		this.initUserModel();
 		this.initImageModel();
+		this.initCollectionModel();
 	}
 
 	async connect(): Promise<void> {
@@ -63,9 +63,13 @@ export class PostgresqlService {
 					type: new DataTypes.STRING(255),
 					allowNull: false,
 				},
-				backgroundImage: {
-					type: new DataTypes.TEXT(),
-					allowNull: true,
+				backgroundId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+					references: {
+						model: User,
+						key: 'id',
+					},
 				},
 				createdAt: DataTypes.DATE,
 				updatedAt: DataTypes.DATE,
@@ -77,6 +81,8 @@ export class PostgresqlService {
 				sequelize: this.client,
 			},
 		);
+		Collection.hasOne(Image, { foreignKey: 'id', as: 'backgroundImage' });
+		Image.belongsTo(Collection, { foreignKey: 'id' });
 	}
 
 	initUserModel(): void {

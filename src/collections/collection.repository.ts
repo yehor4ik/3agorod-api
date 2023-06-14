@@ -2,11 +2,19 @@ import { ICollectionRepository } from './collection.repository.interface';
 import { injectable } from 'inversify';
 import { CollectionCreateDto } from './dto/collection-create.dto';
 import { Collection } from './collection.model';
+import { Image } from '../images/image.model';
 
 @injectable()
 export class CollectionRepository implements ICollectionRepository {
 	async getAllCollections(): Promise<Collection[]> {
-		const collections = await Collection.findAll();
+		const collections = await Collection.findAll({
+			include: [
+				{
+					model: Image,
+					as: 'backgroundImage',
+				},
+			],
+		});
 		return collections ?? [];
 	}
 
