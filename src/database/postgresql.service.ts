@@ -7,6 +7,7 @@ import { IConfigService } from '../config/config.service.interface';
 import { Collection } from '../collections/collection.model';
 import { User } from '../users/user.model';
 import { Image } from '../images/image.model';
+import { Price } from '../prices/price.model';
 
 @injectable()
 export class PostgresqlService {
@@ -33,6 +34,7 @@ export class PostgresqlService {
 		this.initUserModel();
 		this.initImageModel();
 		this.initCollectionModel();
+		this.initPriceModel();
 	}
 
 	async connect(): Promise<void> {
@@ -145,6 +147,37 @@ export class PostgresqlService {
 				underscored: true,
 				timestamps: true,
 				tableName: 'image',
+				sequelize: this.client,
+			},
+		);
+	}
+
+	initPriceModel(): void {
+		Price.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				value: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				currency: {
+					type: new DataTypes.STRING(3),
+					allowNull: false,
+					validate: {
+						isIn: [['USD', 'EUR', 'UAH']],
+					},
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'price',
 				sequelize: this.client,
 			},
 		);

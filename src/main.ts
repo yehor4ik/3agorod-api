@@ -26,6 +26,12 @@ import { IImageService } from './images/image.service.interface';
 import { ImageService } from './images/image.service';
 import { IImageRepository } from './images/image.repository.interface';
 import { ImageRepository } from './images/image.repository';
+import { IPriceController } from './prices/price.controller.interface';
+import { PriceController } from './prices/price.controller';
+import { IPriceService } from './prices/price.service.interface';
+import { PriceService } from './prices/price.service';
+import { IPriceRepository } from './prices/price.repository.interface';
+import { PriceRepository } from './prices/price.repository';
 
 export interface IBootstrapReturn {
 	appContainer: Container;
@@ -46,6 +52,9 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IImageController>(TYPES.ImageController).to(ImageController);
 	bind<IImageService>(TYPES.ImageService).to(ImageService);
 	bind<IImageRepository>(TYPES.ImageRepository).to(ImageRepository);
+	bind<IPriceController>(TYPES.PriceController).to(PriceController);
+	bind<IPriceService>(TYPES.PriceService).to(PriceService);
+	bind<IPriceRepository>(TYPES.PriceRepository).to(PriceRepository);
 	bind<App>(TYPES.Application).to(App);
 });
 

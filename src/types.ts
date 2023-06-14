@@ -1,5 +1,3 @@
-import { ImageRepository } from './images/image.repository';
-
 export const TYPES = {
 	Application: Symbol.for('Application'),
 	ILogger: Symbol.for('ILogger'),
@@ -15,4 +13,7 @@ export const TYPES = {
 	ImageController: Symbol.for('ImageController'),
 	ImageService: Symbol.for('ImageService'),
 	ImageRepository: Symbol.for('ImageRepository'),
+	PriceController: Symbol.for('PriceController'),
+	PriceRepository: Symbol.for('PriceRepository'),
+	PriceService: Symbol.for('PriceService'),
 };
