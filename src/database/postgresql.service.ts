@@ -8,6 +8,7 @@ import { Collection } from '../collections/collection.model';
 import { User } from '../users/user.model';
 import { Image } from '../images/image.model';
 import { Price } from '../prices/price.model';
+import { Stock } from '../stocks/stock.model';
 
 @injectable()
 export class PostgresqlService {
@@ -35,6 +36,7 @@ export class PostgresqlService {
 		this.initImageModel();
 		this.initCollectionModel();
 		this.initPriceModel();
+		this.initStockModel();
 	}
 
 	async connect(): Promise<void> {
@@ -165,7 +167,7 @@ export class PostgresqlService {
 					allowNull: false,
 				},
 				currency: {
-					type: new DataTypes.STRING(3),
+					type: new DataTypes.ENUM('USD', 'EUR', 'UAH'),
 					allowNull: false,
 					validate: {
 						isIn: [['USD', 'EUR', 'UAH']],
@@ -178,6 +180,37 @@ export class PostgresqlService {
 				underscored: true,
 				timestamps: true,
 				tableName: 'price',
+				sequelize: this.client,
+			},
+		);
+	}
+
+	initStockModel(): void {
+		Stock.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				quantity: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				size: {
+					type: new DataTypes.ENUM('XS', 'S', 'M', 'L', 'XL'),
+					allowNull: false,
+					validate: {
+						isIn: [['XS', 'S', 'M', 'L', 'XL']],
+					},
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'stock',
 				sequelize: this.client,
 			},
 		);

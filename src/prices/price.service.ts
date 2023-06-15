@@ -39,8 +39,8 @@ export class PriceService implements IPriceService {
 				return new HttpError(404, `Price with this ID: ${id} is not exist`);
 			}
 
-			const updatedCollection = await updatePrice(currentPrice, dto);
-			return updatedCollection ?? new HttpError(500, `Failed to update the price with ${id}`);
+			const updatedPrice = await updatePrice(currentPrice, dto);
+			return updatedPrice ?? new HttpError(500, `Failed to update the price with ${id}`);
 		} catch (e) {
 			return new HttpError(500, (e as Error).message, 'PriceService');
 		}
@@ -56,11 +56,11 @@ export class PriceService implements IPriceService {
 				return new HttpError(404, `Price with this ID: ${id} is not exist`);
 			}
 
-			const deletedCollection = await deletedPriceById(id);
-			const isNull = deletedCollection === null;
+			const deletedPrice = await deletedPriceById(id);
+			const isNull = deletedPrice === null;
 			const errorMessage = new HttpError(500, `Failed to remove the price with ${id}`);
 
-			return isNull ? deletedCollection : errorMessage;
+			return isNull ? deletedPrice : errorMessage;
 		} catch (e) {
 			return new HttpError(500, (e as Error).message, 'PriceService');
 		}

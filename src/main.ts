@@ -32,6 +32,12 @@ import { IPriceService } from './prices/price.service.interface';
 import { PriceService } from './prices/price.service';
 import { IPriceRepository } from './prices/price.repository.interface';
 import { PriceRepository } from './prices/price.repository';
+import { IStockController } from './stocks/stock.controller.interface';
+import { StockController } from './stocks/stock.controller';
+import { IStockService } from './stocks/stock.service.interface';
+import { StockService } from './stocks/stock.service';
+import { IStockRepository } from './stocks/stock.repository.interface';
+import { StockRepository } from './stocks/stock.repository';
 
 export interface IBootstrapReturn {
 	appContainer: Container;
@@ -55,6 +61,9 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IPriceController>(TYPES.PriceController).to(PriceController);
 	bind<IPriceService>(TYPES.PriceService).to(PriceService);
 	bind<IPriceRepository>(TYPES.PriceRepository).to(PriceRepository);
+	bind<IStockController>(TYPES.StockController).to(StockController);
+	bind<IStockService>(TYPES.StockService).to(StockService);
+	bind<IStockRepository>(TYPES.StockRepository).to(StockRepository);
 	bind<App>(TYPES.Application).to(App);
 });
 

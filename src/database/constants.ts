@@ -41,12 +41,10 @@ export const INITIALIZATION_POSTGRESQL_DB = `
     CREATE TABLE IF NOT EXISTS Stock
     (
         id       SERIAL PRIMARY KEY,
-        size     VARCHAR(2) NOT NULL,
-        quantity INTEGER,
-        price_id  INTEGER,
+        size     VARCHAR(2) CHECK ( size IN ('XS', 'S', 'M', 'L', 'XL')) NOT NULL,
+        quantity INTEGER DEFAULT 0,
         created_at        DATE,
-        updated_at        DATE,
-        FOREIGN KEY (price_id) REFERENCES Price (id)
+        updated_at        DATE
     );
 
     CREATE TABLE IF NOT EXISTS Product
