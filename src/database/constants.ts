@@ -32,8 +32,8 @@ export const INITIALIZATION_POSTGRESQL_DB = `
     CREATE TABLE IF NOT EXISTS Price
     (
         id       SERIAL PRIMARY KEY,
-        value    NUMERIC,
-        currency VARCHAR(3) NOT NULL,
+        value    NUMERIC NOT NULL,
+        currency VARCHAR(3) CHECK ( currency IN ('USD', 'EUR', 'UAH')) NOT NULL,
         created_at        DATE,
         updated_at        DATE
     );
