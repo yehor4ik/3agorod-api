@@ -26,12 +26,12 @@ export class StockController extends BaseController implements IStockController 
 		const secret = this.configService.get<string>('JWT_SECRET_KEY');
 
 		this.bindRoutes([
-			{ method: 'get', path: '/', func: this.get, middlewares: [new AuthMiddleware(secret)] },
+			{ method: 'get', path: '/', func: this.get },
 			{
 				method: 'delete',
 				path: '/:stockId',
 				func: this.delete,
-				middlewares: [],
+				middlewares: [new AuthMiddleware(secret)],
 			},
 			{
 				method: 'post',

@@ -25,7 +25,7 @@ export class PriceController extends BaseController implements IPriceController 
 		const secret = this.configService.get<string>('JWT_SECRET_KEY');
 
 		this.bindRoutes([
-			{ method: 'get', path: '/', func: this.get, middlewares: [new AuthMiddleware(secret)] },
+			{ method: 'get', path: '/', func: this.get, middlewares: [] },
 			{
 				method: 'delete',
 				path: '/:priceId',
