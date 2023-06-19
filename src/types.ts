@@ -19,4 +19,5 @@ export const TYPES = {
 	StockController: Symbol.for('StockController'),
 	StockService: Symbol.for('StockService'),
 	StockRepository: Symbol.for('StockRepository'),
+	StockPriceRepository: Symbol.for('StockPriceRepository'),
 };

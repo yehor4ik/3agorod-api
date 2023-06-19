@@ -1,5 +1,5 @@
 import { CollectionCreateDto } from './dto/collection-create.dto';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { Collection } from './collection.model';
 
 export interface ICollectionService {

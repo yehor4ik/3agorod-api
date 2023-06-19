@@ -1,6 +1,6 @@
 import express, { Express } from 'express';
 import { Server } from 'http';
-import { UserController } from './users/user.controller';
+import { UserController } from './components/users/user.controller';
 import { ILogger } from './logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
@@ -8,11 +8,11 @@ import { TYPES } from './types';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { json } from 'body-parser';
 import { PostgresqlService } from './database/postgresql.service';
-import { CollectionController } from './collections/collection.controller';
+import { CollectionController } from './components/controller/collection.controller';
 import cors from 'cors';
-import { ImageController } from './images/image.controller';
-import { PriceController } from './prices/price.controller';
-import { StockController } from './stocks/stock.controller';
+import { ImageController } from './components/images/image.controller';
+import { PriceController } from './components/prices/price.controller';
+import { StockController } from './components/stocks/stock.controller';
 
 interface ICorsOptions {
 	origin: string;

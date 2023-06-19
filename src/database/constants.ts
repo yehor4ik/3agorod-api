@@ -47,6 +47,14 @@ export const INITIALIZATION_POSTGRESQL_DB = `
         updated_at        DATE
     );
 
+    CREATE TABLE IF NOT EXISTS stock_price
+    (
+        stock_id INTEGER NOT NULL,
+        price_id INTEGER NOT NULL,
+        FOREIGN KEY (stock_id) REFERENCES Stock (id),
+        FOREIGN KEY (price_id) REFERENCES Price (id)
+    );
+
     CREATE TABLE IF NOT EXISTS Product
     (
         id           SERIAL PRIMARY KEY,

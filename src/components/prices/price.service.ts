@@ -1,10 +1,10 @@
 import { IPriceService } from './price.service.interface';
 import { Price } from './price.model';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
+import { TYPES } from '../../types';
 import { IPriceRepository } from './price.repository.interface';
 import { PriceCreateDto } from './dto/price-create.dto';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { PriceUpdateDto } from './dto/price-update.dto';
 
 @injectable()
@@ -29,21 +29,22 @@ export class PriceService implements IPriceService {
 	}
 
 	async update(dto: PriceUpdateDto, priceId: string): Promise<HttpError | Price> {
-		try {
-			const { getPriceById, updatePrice } = this.priceRepository;
-			const id: number = +priceId;
+		// try {
+		const { getPriceById, updatePrice } = this.priceRepository;
+		const id: number = +priceId;
 
-			const currentPrice = await getPriceById(+id);
+		const currentPrice = await getPriceById(+id);
 
-			if (!currentPrice) {
-				return new HttpError(404, `Price with this ID: ${id} is not exist`);
-			}
-
-			const updatedPrice = await updatePrice(currentPrice, dto);
-			return updatedPrice ?? new HttpError(500, `Failed to update the price with ${id}`);
-		} catch (e) {
-			return new HttpError(500, (e as Error).message, 'PriceService');
+		if (!currentPrice) {
+			//TODO  Refactoring the error handling
+			throw new HttpError(404, `Price with this ID: ${id} is not exist`);
 		}
+
+		const updatedPrice = await updatePrice(currentPrice, dto);
+		return updatedPrice ?? new HttpError(500, `Failed to update the price with ${id}`);
+		// } catch (e) {
+		// 	return new HttpError(500, (e as Error).message, 'PriceService');
+		// }
 	}
 
 	async delete(priceId: string): Promise<HttpError | null> {

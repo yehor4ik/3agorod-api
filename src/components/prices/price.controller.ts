@@ -1,16 +1,16 @@
-import { BaseController } from '../common/base.controller';
+import { BaseController } from '../../common/base.controller';
 import { IPriceController, IPriceParams } from './price.controller.interface';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { ILogger } from '../logger/logger.interface';
-import { IConfigService } from '../config/config.service.interface';
-import { RequestValidateMiddleware } from '../common/request-validate.middleware';
+import { TYPES } from '../../types';
+import { ILogger } from '../../logger/logger.interface';
+import { IConfigService } from '../../config/config.service.interface';
+import { RequestValidateMiddleware } from '../../common/request-validate.middleware';
 import { PriceCreateDto } from './dto/price-create.dto';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { IPriceService } from './price.service.interface';
 import { Price } from './price.model';
-import { AuthMiddleware } from '../common/auth.middleware';
+import { AuthMiddleware } from '../../common/auth.middleware';
 import { PriceUpdateDto } from './dto/price-update.dto';
 
 @injectable()

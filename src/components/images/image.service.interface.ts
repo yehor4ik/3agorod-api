@@ -1,5 +1,5 @@
 import { Image } from './image.model';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { IFile } from './dto/file-create.dto';
 
 export interface IImageService {

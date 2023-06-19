@@ -1,12 +1,11 @@
 import { injectable } from 'inversify';
 import { IStockRepository } from './stock.repository.interface';
-import { StockCreateDto } from './dto/stock-create.dto';
-import { Stock } from './stock.model';
+import { IStockCreationAttributes, Stock } from './stock.model';
 import { StockUpdateDto } from './dto/stock-update.dto';
 
 @injectable()
 export class StockRepository implements IStockRepository {
-	async create(dto: StockCreateDto): Promise<Stock | null> {
+	async create(dto: IStockCreationAttributes): Promise<Stock | null> {
 		const newStock = await Stock.create(dto);
 		return newStock ?? null;
 	}

@@ -4,11 +4,12 @@ import { TYPES } from '../types';
 import { ILogger } from '../logger/logger.interface';
 import { INITIALIZATION_POSTGRESQL_DB } from './constants';
 import { IConfigService } from '../config/config.service.interface';
-import { Collection } from '../collections/collection.model';
-import { User } from '../users/user.model';
-import { Image } from '../images/image.model';
-import { Price } from '../prices/price.model';
-import { Stock } from '../stocks/stock.model';
+import { Collection } from '../components/controller/collection.model';
+import { User } from '../components/users/user.model';
+import { Image } from '../components/images/image.model';
+import { Price } from '../components/prices/price.model';
+import { Stock } from '../components/stocks/stock.model';
+import { StockPrice } from '../components/stock-price/stock-price.model';
 
 @injectable()
 export class PostgresqlService {
@@ -37,6 +38,7 @@ export class PostgresqlService {
 		this.initCollectionModel();
 		this.initPriceModel();
 		this.initStockModel();
+		this.initStockPriceModel();
 	}
 
 	async connect(): Promise<void> {
@@ -214,5 +216,27 @@ export class PostgresqlService {
 				sequelize: this.client,
 			},
 		);
+	}
+
+	initStockPriceModel(): void {
+		StockPrice.init(
+			{
+				stockId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				priceId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+			},
+			{
+				underscored: true,
+				tableName: 'stock_price',
+				sequelize: this.client,
+				timestamps: false,
+			},
+		);
+		StockPrice.removeAttribute('id');
 	}
 }

@@ -4,13 +4,13 @@ import {
 	IGetImageParams,
 } from './image.controller.interface';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { ILogger } from '../logger/logger.interface';
-import { IConfigService } from '../config/config.service.interface';
-import { BaseController } from '../common/base.controller';
-import { AuthMiddleware } from '../common/auth.middleware';
+import { TYPES } from '../../types';
+import { ILogger } from '../../logger/logger.interface';
+import { IConfigService } from '../../config/config.service.interface';
+import { BaseController } from '../../common/base.controller';
+import { AuthMiddleware } from '../../common/auth.middleware';
 import { IImageService } from './image.service.interface';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { NextFunction, Request, Response } from 'express';
 import multer, { Multer } from 'multer';
 import { Image } from './image.model';

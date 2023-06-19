@@ -1,5 +1,5 @@
 import { Price } from './price.model';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { PriceCreateDto } from './dto/price-create.dto';
 import { PriceUpdateDto } from './dto/price-update.dto';
 

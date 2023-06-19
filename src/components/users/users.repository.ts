@@ -1,7 +1,7 @@
 import { IUsersRepository } from './users.repository.interface';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { PostgresqlService } from '../database/postgresql.service';
+import { TYPES } from '../../types';
+import { PostgresqlService } from '../../database/postgresql.service';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { User } from './user.model';
 

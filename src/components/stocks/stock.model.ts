@@ -1,6 +1,6 @@
 import { InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 
-interface IStockCreationAttributes
+export interface IStockCreationAttributes
 	extends Omit<InferCreationAttributes<Stock>, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export enum SizeTypes {

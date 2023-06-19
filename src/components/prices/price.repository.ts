@@ -10,6 +10,11 @@ export class PriceRepository implements IPriceRepository {
 		const newPrice = await Price.create(dto);
 		return newPrice ?? null;
 	}
+
+	async createManyPrices(dto: PriceCreateDto[]): Promise<Price[] | null> {
+		const result = await Price.bulkCreate(dto);
+		return result ?? null;
+	}
 	async getPriceById(priceId: number): Promise<Price | null> {
 		const price = await Price.findOne({
 			where: { id: priceId },

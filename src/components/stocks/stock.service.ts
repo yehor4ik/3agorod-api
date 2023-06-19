@@ -1,20 +1,41 @@
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { HttpError } from '../errors/http-error.class';
+import { TYPES } from '../../types';
+import { HttpError } from '../../errors/http-error.class';
 import { IStockService } from './stock.service.interface';
 import { StockCreateDto } from './dto/stock-create.dto';
 import { StockUpdateDto } from './dto/stock-update.dto';
 import { Stock } from './stock.model';
 import { IStockRepository } from './stock.repository.interface';
+import { IStockPriceRepository } from '../stock-price/stock-price.repository.interface';
+import { IPriceRepository } from '../prices/price.repository.interface';
+import { StockPrice } from '../stock-price/stock-price.model';
+import { ICreateStockResponse } from './types/create-stock-response.interface';
 
 @injectable()
 export class StockService implements IStockService {
-	constructor(@inject(TYPES.StockRepository) private readonly stockRepository: IStockRepository) {}
-	async create(dto: StockCreateDto): Promise<Stock | HttpError> {
+	constructor(
+		@inject(TYPES.StockRepository) private readonly stockRepository: IStockRepository,
+		@inject(TYPES.PriceRepository) private readonly priceRepository: IPriceRepository,
+		@inject(TYPES.StockPriceRepository)
+		private readonly stockPriceRepository: IStockPriceRepository,
+	) {}
+	async create(dto: StockCreateDto): Promise<ICreateStockResponse | HttpError> {
 		const error = new HttpError(500, 'Stock has not been saved');
 		try {
-			const createdStock = await this.stockRepository.create(dto);
-			return createdStock ?? error;
+			const { prices, ...restDto } = dto;
+
+			const createdStock = await this.stockRepository.create(restDto);
+			const createdPrice = await this.priceRepository.createManyPrices(prices);
+
+			if (!createdStock || !createdPrice) return error;
+
+			const stockPriceDbQuery = createdPrice.map((price) => ({
+				stockId: createdStock.id,
+				priceId: price.id,
+			})) as StockPrice[];
+
+			await this.stockPriceRepository.create(stockPriceDbQuery);
+			return { ...createdStock.dataValues, prices: createdPrice } ?? error;
 		} catch (e) {
 			return error;
 		}

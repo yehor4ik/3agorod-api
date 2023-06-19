@@ -1,17 +1,18 @@
-import { BaseController } from '../common/base.controller';
+import { BaseController } from '../../common/base.controller';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { ILogger } from '../logger/logger.interface';
-import { IConfigService } from '../config/config.service.interface';
+import { TYPES } from '../../types';
+import { ILogger } from '../../logger/logger.interface';
+import { IConfigService } from '../../config/config.service.interface';
 import { IStockController, IStockParams } from './stock.controller.interface';
 import { StockCreateDto } from './dto/stock-create.dto';
 import { StockUpdateDto } from './dto/stock-update.dto';
 import { IStockService } from './stock.service.interface';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { Stock } from './stock.model';
-import { AuthMiddleware } from '../common/auth.middleware';
-import { RequestValidateMiddleware } from '../common/request-validate.middleware';
+import { AuthMiddleware } from '../../common/auth.middleware';
+import { RequestValidateMiddleware } from '../../common/request-validate.middleware';
+import { ICreateStockResponse } from './types/create-stock-response.interface';
 
 @injectable()
 export class StockController extends BaseController implements IStockController {
@@ -54,7 +55,7 @@ export class StockController extends BaseController implements IStockController 
 		const createdStock = await this.stockService.create(body);
 		const isError = createdStock instanceof HttpError;
 
-		isError ? next(createdStock) : this.created<Stock>(res, createdStock);
+		isError ? next(createdStock) : this.created<ICreateStockResponse>(res, createdStock);
 	}
 	async get(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const stocks = await this.stockService.getAll();

@@ -2,8 +2,8 @@ import { IImageService } from './image.service.interface';
 import { IImageImageCreationAttributes, Image } from './image.model';
 import { injectable, inject } from 'inversify';
 import { IImageRepository } from './image.repository.interface';
-import { TYPES } from '../types';
-import { HttpError } from '../errors/http-error.class';
+import { TYPES } from '../../types';
+import { HttpError } from '../../errors/http-error.class';
 import { IFile } from './dto/file-create.dto';
 import path from 'path';
 

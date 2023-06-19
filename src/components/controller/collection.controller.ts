@@ -1,17 +1,17 @@
-import { BaseController } from '../common/base.controller';
+import { BaseController } from '../../common/base.controller';
 import { ICollectionController, ICollectionParams } from './collection.controller.interface';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { ILogger } from '../logger/logger.interface';
+import { TYPES } from '../../types';
+import { ILogger } from '../../logger/logger.interface';
 import { ICollectionService } from './collection.service.interface';
 import { CollectionCreateDto } from './dto/collection-create.dto';
-import { RequestValidateMiddleware } from '../common/request-validate.middleware';
+import { RequestValidateMiddleware } from '../../common/request-validate.middleware';
 import { CollectionUpdateDto } from './dto/collection-update.dto';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { Collection } from './collection.model';
-import { AuthMiddleware } from '../common/auth.middleware';
-import { IConfigService } from '../config/config.service.interface';
+import { AuthMiddleware } from '../../common/auth.middleware';
+import { IConfigService } from '../../config/config.service.interface';
 
 @injectable()
 export class CollectionController extends BaseController implements ICollectionController {

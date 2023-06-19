@@ -3,11 +3,11 @@ import { IUserService } from './users.service.interface';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UserLoginDto } from './dto/user-login.dto';
 import { User } from './user.model';
-import { TYPES } from '../types';
-import { IConfigService } from '../config/config.service.interface';
+import { TYPES } from '../../types';
+import { IConfigService } from '../../config/config.service.interface';
 import { IUsersRepository } from './users.repository.interface';
 import { UserEntity } from './user.entity';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { IResponseUserLogin } from './types/response-user-login';
 import jwt from 'jsonwebtoken';
 
