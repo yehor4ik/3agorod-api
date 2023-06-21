@@ -8,7 +8,6 @@ import { IStockController, IStockParams } from './stock.controller.interface';
 import { StockCreateDto } from './dto/stock-create.dto';
 import { StockUpdateDto } from './dto/stock-update.dto';
 import { IStockService } from './stock.service.interface';
-import { HttpError } from '../../errors/http-error.class';
 import { Stock } from './stock.model';
 import { AuthMiddleware } from '../../common/auth.middleware';
 import { RequestValidateMiddleware } from '../../common/request-validate.middleware';
@@ -52,38 +51,46 @@ export class StockController extends BaseController implements IStockController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const createdStock = await this.stockService.create(body);
-		const isError = createdStock instanceof HttpError;
-
-		isError ? next(createdStock) : this.created<ICreateStockResponse>(res, createdStock);
+		try {
+			const createdStock = await this.stockService.create(body);
+			this.created<ICreateStockResponse>(res, createdStock);
+		} catch (e) {
+			next(e);
+		}
 	}
 	async get(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const stocks = await this.stockService.getAll();
-		const isError = stocks instanceof HttpError;
-
-		isError ? next(stocks) : this.created<Stock[]>(res, stocks);
+		try {
+			const stocks = await this.stockService.getAll();
+			this.created<Stock[]>(res, stocks);
+		} catch (e) {
+			next(e);
+		}
 	}
 	async update(
 		req: Request<IStockParams, {}, StockUpdateDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const { body, params } = req;
-		const stockId = params.stockId;
-		const updatedStock = await this.stockService.update(body, stockId);
-		const isError = updatedStock instanceof HttpError;
-
-		isError ? next(updatedStock) : this.ok<Stock>(res, updatedStock);
+		try {
+			const { body, params } = req;
+			const stockId = params.stockId;
+			const updatedStock = await this.stockService.update(body, stockId);
+			this.ok<Stock>(res, updatedStock);
+		} catch (e) {
+			next(e);
+		}
 	}
 	async delete(
 		{ params }: Request<IStockParams>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const { stockId } = params;
-		const result = await this.stockService.delete(stockId);
-		const isError = result instanceof HttpError;
-
-		isError ? next(result) : this.ok(res, result);
+		try {
+			const { stockId } = params;
+			const result = await this.stockService.delete(stockId);
+			this.ok(res, result);
+		} catch (e) {
+			next(e);
+		}
 	}
 }

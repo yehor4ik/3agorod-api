@@ -57,40 +57,6 @@ export class PostgresqlService {
 		await this.client.close();
 	}
 
-	initCollectionModel(): void {
-		Collection.init(
-			{
-				id: {
-					type: DataTypes.INTEGER.UNSIGNED,
-					autoIncrement: true,
-					primaryKey: true,
-				},
-				name: {
-					type: new DataTypes.STRING(255),
-					allowNull: false,
-				},
-				backgroundId: {
-					type: new DataTypes.INTEGER(),
-					allowNull: false,
-					references: {
-						model: User,
-						key: 'id',
-					},
-				},
-				createdAt: DataTypes.DATE,
-				updatedAt: DataTypes.DATE,
-			},
-			{
-				underscored: true,
-				timestamps: true,
-				tableName: 'collection',
-				sequelize: this.client,
-			},
-		);
-		Collection.hasOne(Image, { foreignKey: 'id', as: 'backgroundImage' });
-		Image.belongsTo(Collection, { foreignKey: 'id' });
-	}
-
 	initUserModel(): void {
 		User.init(
 			{
@@ -122,6 +88,35 @@ export class PostgresqlService {
 				sequelize: this.client,
 			},
 		);
+	}
+
+	initCollectionModel(): void {
+		Collection.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				name: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+				},
+				backgroundId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'collection',
+				sequelize: this.client,
+			},
+		);
+		Collection.belongsTo(Image, { foreignKey: 'backgroundId', as: 'backgroundImage' });
 	}
 
 	initImageModel(): void {

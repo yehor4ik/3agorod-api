@@ -64,10 +64,13 @@ export class ImageController extends BaseController implements IImageController 
 			next(new HttpError(401, 'Image is required field', 'ImageController'));
 			return;
 		}
-		const newImage = await this.imageService.createImage(file);
-		const isError = newImage instanceof HttpError;
 
-		isError ? next(newImage) : this.created<Image>(res, newImage);
+		try {
+			const newImage = await this.imageService.createImage(file);
+			this.created<Image>(res, newImage);
+		} catch (e) {
+			next(e);
+		}
 	}
 
 	async get(req: Request<IGetImageParams>, res: Response): Promise<void> {
@@ -76,10 +79,12 @@ export class ImageController extends BaseController implements IImageController 
 	}
 
 	async delete(req: Request<IRemoveImageParams>, res: Response, next: NextFunction): Promise<void> {
-		const { imageId } = req.params;
-		const deletedImage = await this.imageService.deleteImage(imageId);
-		const isError = deletedImage instanceof HttpError;
-
-		isError ? next(deletedImage) : this.ok<null>(res, deletedImage);
+		try {
+			const { imageId } = req.params;
+			const deletedImage = await this.imageService.deleteImage(imageId);
+			this.ok<null>(res, deletedImage);
+		} catch (e) {
+			next(e);
+		}
 	}
 }

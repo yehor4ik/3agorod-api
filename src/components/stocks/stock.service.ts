@@ -19,69 +19,55 @@ export class StockService implements IStockService {
 		@inject(TYPES.StockPriceRepository)
 		private readonly stockPriceRepository: IStockPriceRepository,
 	) {}
-	async create(dto: StockCreateDto): Promise<ICreateStockResponse | HttpError> {
-		const error = new HttpError(500, 'Stock has not been saved');
-		try {
-			const { prices, ...restDto } = dto;
+	async create(dto: StockCreateDto): Promise<ICreateStockResponse> {
+		const { prices, ...restDto } = dto;
 
-			const createdStock = await this.stockRepository.create(restDto);
-			const createdPrice = await this.priceRepository.createManyPrices(prices);
+		const createdStock = await this.stockRepository.create(restDto);
+		const createdPrice = await this.priceRepository.createManyPrices(prices);
 
-			if (!createdStock || !createdPrice) return error;
-
-			const stockPriceDbQuery = createdPrice.map((price) => ({
-				stockId: createdStock.id,
-				priceId: price.id,
-			})) as StockPrice[];
-
-			await this.stockPriceRepository.create(stockPriceDbQuery);
-			return { ...createdStock.dataValues, prices: createdPrice } ?? error;
-		} catch (e) {
-			return error;
+		if (!createdStock || !createdPrice) {
+			throw new HttpError(500, 'Stock has been not created', 'StockService');
 		}
+
+		const stockPriceDbQuery = createdPrice.map((price) => ({
+			stockId: createdStock.id,
+			priceId: price.id,
+		})) as StockPrice[];
+
+		await this.stockPriceRepository.create(stockPriceDbQuery);
+		return { ...createdStock.dataValues, prices: createdPrice };
 	}
 
-	async getAll(): Promise<HttpError | Stock[]> {
-		try {
-			return await this.stockRepository.getAll();
-		} catch (e) {
-			return new HttpError(500, (e as Error).message);
-		}
+	async getAll(): Promise<Stock[]> {
+		return await this.stockRepository.getAll();
 	}
 
-	async update(dto: StockUpdateDto, stockId: string): Promise<HttpError | Stock> {
-		try {
-			const id: number = +stockId;
+	async update(dto: StockUpdateDto, stockId: string): Promise<Stock> {
+		const id: number = +stockId;
 
-			const currentStock = await this.stockRepository.getById(+id);
+		const currentStock = await this.stockRepository.getById(+id);
 
-			if (!currentStock) {
-				return new HttpError(404, `Stock with this ID: ${id} is not exist`);
-			}
-
-			const updatedStock = await this.stockRepository.update(currentStock, dto);
-			return updatedStock ?? new HttpError(500, `Failed to update the stock with ${id}`);
-		} catch (e) {
-			return new HttpError(500, (e as Error).message, 'StockService');
+		if (!currentStock) {
+			throw new HttpError(404, `Stock with this ID: ${id} is not exist`, 'StockService');
 		}
+
+		const updatedStock = await this.stockRepository.update(currentStock, dto);
+
+		if (!updatedStock) {
+			throw new HttpError(500, `Stock with this ID: ${id} is not updated`, 'StockService');
+		}
+
+		return updatedStock;
 	}
 
-	async delete(stockId: string): Promise<HttpError | null> {
-		try {
-			const id: number = +stockId;
-			const currentPrice = await this.stockRepository.getById(id);
+	async delete(stockId: string): Promise<null> {
+		const id: number = +stockId;
+		const currentPrice = await this.stockRepository.getById(id);
 
-			if (!currentPrice) {
-				return new HttpError(404, `Price with this ID: ${id} is not exist`);
-			}
-
-			const deletedStock = await this.stockRepository.deletedById(id);
-			const isNull = deletedStock === null;
-			const errorMessage = new HttpError(500, `Failed to remove the price with ${id}`);
-
-			return isNull ? deletedStock : errorMessage;
-		} catch (e) {
-			return new HttpError(500, (e as Error).message, 'PriceService');
+		if (!currentPrice) {
+			throw new HttpError(404, `Price with this ID: ${id} is not exist`, 'StockService');
 		}
+
+		return await this.stockRepository.deletedById(id);
 	}
 }

@@ -12,57 +12,48 @@ export class CollectionService implements ICollectionService {
 		@inject(TYPES.CollectionRepository)
 		private readonly collectionRepository: ICollectionRepository,
 	) {}
-	async getAllCollections(): Promise<Collection[] | HttpError> {
-		try {
-			return await this.collectionRepository.getAllCollections();
-		} catch (e) {
-			return new HttpError(500, (e as Error).message);
-		}
+	async getAllCollections(): Promise<Collection[]> {
+		return await this.collectionRepository.getAllCollections();
 	}
-	async createCollection(dto: CollectionCreateDto): Promise<Collection | HttpError> {
-		try {
-			const createdCollection = await this.collectionRepository.createCollection(dto);
-			return createdCollection ?? new HttpError(409, dto.name + ' this collection already exists');
-		} catch (e) {
-			return new HttpError(500, (e as Error).message);
+	async createCollection(dto: CollectionCreateDto): Promise<Collection> {
+		const createdCollection = await this.collectionRepository.createCollection(dto);
+		if (!createdCollection) {
+			throw new HttpError(409, `${dto.name} this collection already exists`, 'CollectionService');
 		}
+		const result = await this.collectionRepository.getCollectionById(createdCollection.id);
+
+		if (!result) {
+			throw new HttpError(409, `${dto.name} this collection already exists`, 'CollectionService');
+		}
+		return result;
 	}
-	async updateCollectionById(
-		dto: CollectionCreateDto,
-		collectionId: string,
-	): Promise<Collection | HttpError> {
+	async updateCollectionById(dto: CollectionCreateDto, collectionId: string): Promise<Collection> {
 		const { getCollectionById, updateCollection } = this.collectionRepository;
 		const id: number = +collectionId;
-		try {
-			const currentCollection = await getCollectionById(+id);
+		const currentCollection = await getCollectionById(+id);
 
-			if (!currentCollection) {
-				return new HttpError(404, `Collection with this ID: ${id} is not exist`);
-			}
-
-			const updatedCollection = await updateCollection(currentCollection, dto);
-			return updatedCollection ?? new HttpError(500, `Failed to update the collection with ${id}`);
-		} catch (e) {
-			return new HttpError(500, (e as Error).message);
+		if (!currentCollection) {
+			throw new HttpError(404, `Collection with this ID: ${id} is not exist`, 'CollectionService');
 		}
+
+		const updatedCollection = await updateCollection(currentCollection, dto);
+
+		const result = await this.collectionRepository.getCollectionById(updatedCollection.id);
+
+		if (!result) {
+			throw new HttpError(404, `Collection with this ID: ${id} is not exist`, 'CollectionService');
+		}
+		return result;
 	}
-	async deleteCollectionById(collectionId: string): Promise<null | HttpError> {
-		try {
-			const { getCollectionById, deleteCollection } = this.collectionRepository;
-			const id: number = +collectionId;
-			const currentCollection = await getCollectionById(+id);
+	async deleteCollectionById(collectionId: string): Promise<null> {
+		const { getCollectionById, deleteCollection } = this.collectionRepository;
+		const id: number = +collectionId;
+		const currentCollection = await getCollectionById(+id);
 
-			if (!currentCollection) {
-				return new HttpError(404, `Collection with this ID: ${id} is not exist`);
-			}
-
-			const deletedCollection = await deleteCollection(id);
-			const isNull = deletedCollection === null;
-			const errorMessage = new HttpError(500, `Failed to remove the collection with ${id}`);
-
-			return isNull ? deletedCollection : errorMessage;
-		} catch (e) {
-			return new HttpError(500, (e as Error).message);
+		if (!currentCollection) {
+			throw new HttpError(404, `Collection with this ID: ${id} is not exist`, 'CollectionService');
 		}
+
+		return await deleteCollection(id);
 	}
 }

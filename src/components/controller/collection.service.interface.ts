@@ -1,13 +1,9 @@
 import { CollectionCreateDto } from './dto/collection-create.dto';
-import { HttpError } from '../../errors/http-error.class';
 import { Collection } from './collection.model';
 
 export interface ICollectionService {
-	getAllCollections: () => Promise<Collection[] | HttpError>;
-	createCollection: (dto: CollectionCreateDto) => Promise<Collection | HttpError>;
-	updateCollectionById: (
-		dto: CollectionCreateDto,
-		collectionId: string,
-	) => Promise<Collection | HttpError>;
-	deleteCollectionById: (id: string) => Promise<null | HttpError>;
+	getAllCollections: () => Promise<Collection[]>;
+	createCollection: (dto: CollectionCreateDto) => Promise<Collection>;
+	updateCollectionById: (dto: CollectionCreateDto, collectionId: string) => Promise<Collection>;
+	deleteCollectionById: (id: string) => Promise<null>;
 }

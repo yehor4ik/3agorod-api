@@ -3,40 +3,65 @@ import { PriceCreateDto } from './dto/price-create.dto';
 import { Price } from './price.model';
 import { injectable } from 'inversify';
 import { PriceUpdateDto } from './dto/price-update.dto';
+import { HttpError } from '../../errors/http-error.class';
 
 @injectable()
 export class PriceRepository implements IPriceRepository {
 	async createPrice(dto: PriceCreateDto): Promise<Price | null> {
-		const newPrice = await Price.create(dto);
-		return newPrice ?? null;
+		try {
+			const newPrice = await Price.create(dto);
+			return newPrice ?? null;
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
 	}
 
 	async createManyPrices(dto: PriceCreateDto[]): Promise<Price[] | null> {
-		const result = await Price.bulkCreate(dto);
-		return result ?? null;
+		try {
+			const result = await Price.bulkCreate(dto);
+			return result ?? null;
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
 	}
 	async getPriceById(priceId: number): Promise<Price | null> {
-		const price = await Price.findOne({
-			where: { id: priceId },
-		});
+		try {
+			const price = await Price.findOne({
+				where: { id: priceId },
+			});
 
-		return price ?? null;
+			return price ?? null;
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
 	}
 
 	async getAllPrices(): Promise<Price[]> {
-		const prices = await Price.findAll();
-		return prices ?? [];
+		try {
+			const prices = await Price.findAll();
+			return prices ?? [];
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
 	}
 
 	async updatePrice(currentPrice: Price, dto: PriceUpdateDto): Promise<Price | null> {
-		const updatedPrice = currentPrice.update(dto);
+		try {
+			const updatedPrice = currentPrice.update(dto);
 
-		return updatedPrice ?? null;
+			return updatedPrice ?? null;
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
 	}
 
 	async deletedPriceById(priceId: number): Promise<null> {
-		await Price.destroy({ where: { id: priceId } });
+		try {
+			await Price.destroy({ where: { id: priceId } });
 
-		return null;
+			return null;
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
 	}
 }

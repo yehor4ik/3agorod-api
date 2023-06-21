@@ -17,51 +17,48 @@ export class UsersService implements IUserService {
 		@inject(TYPES.IConfigService) private readonly configService: IConfigService,
 		@inject(TYPES.IUsersRepository) private readonly usersRepository: IUsersRepository,
 	) {}
-	async createUser({ password, email, name }: UserRegisterDto): Promise<User | HttpError> {
-		try {
-			const existingUser = await this.usersRepository.findUserByEmail(email);
-			if (existingUser) {
-				return new HttpError(404, `This ${email} email address already in use.`);
-			}
-
-			const salt = this.configService.get<number>('SALT');
-
-			const newPassword = await UserEntity.getPassword(password, salt);
-			const newUser = await this.usersRepository.createUser({ email, name, password: newPassword });
-			return newUser ?? new HttpError(500, `Failed to create this user ${email}`);
-		} catch (e) {
-			return new HttpError(500, (e as Error).message, 'UsersService');
+	async createUser({ password, email, name }: UserRegisterDto): Promise<User> {
+		const existingUser = await this.usersRepository.findUserByEmail(email);
+		if (existingUser) {
+			throw new HttpError(404, `This ${email} email address already in use.`);
 		}
+
+		const salt = this.configService.get<number>('SALT');
+
+		const newPassword = await UserEntity.getPassword(password, salt);
+		const newUser = await this.usersRepository.createUser({ email, name, password: newPassword });
+
+		if (!newUser) {
+			throw new HttpError(500, `Failed to create this user ${email}`);
+		}
+
+		return newUser;
 	}
 
-	async loginUser({ email, password }: UserLoginDto): Promise<IResponseUserLogin | HttpError> {
-		try {
-			const existingUser = await this.usersRepository.findUserByEmail(email);
+	async loginUser({ email, password }: UserLoginDto): Promise<IResponseUserLogin> {
+		const existingUser = await this.usersRepository.findUserByEmail(email);
 
-			if (!existingUser) {
-				return new HttpError(401, 'Invalid email or password');
-			}
-
-			const matchPassword = UserEntity.checkPassword(password, existingUser.password);
-
-			if (!matchPassword) {
-				return new HttpError(401, 'Invalid email or password');
-			}
-
-			const secretKey = this.configService.get<string>('JWT_SECRET_KEY');
-			const token = jwt.sign({ userId: existingUser.id }, secretKey, { expiresIn: 60 * 60 });
-			return {
-				user: {
-					id: existingUser.id,
-					name: existingUser.name,
-					email: existingUser.email,
-					createdAt: existingUser.createdAt,
-					updatedAt: existingUser.updatedAt,
-				},
-				token,
-			};
-		} catch {
-			return new HttpError(500, 'Server error. Please try again later.');
+		if (!existingUser) {
+			throw new HttpError(401, 'Invalid email or password');
 		}
+
+		const matchPassword = await UserEntity.checkPassword(password, existingUser.password);
+
+		if (!matchPassword) {
+			throw new HttpError(401, 'Invalid email or password');
+		}
+
+		const secretKey = this.configService.get<string>('JWT_SECRET_KEY');
+		const token = jwt.sign({ userId: existingUser.id }, secretKey, { expiresIn: 60 * 60 });
+		return {
+			user: {
+				id: existingUser.id,
+				name: existingUser.name,
+				email: existingUser.email,
+				createdAt: existingUser.createdAt,
+				updatedAt: existingUser.updatedAt,
+			},
+			token,
+		};
 	}
 }
