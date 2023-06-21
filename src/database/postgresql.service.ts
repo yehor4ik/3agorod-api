@@ -4,10 +4,12 @@ import { TYPES } from '../types';
 import { ILogger } from '../logger/logger.interface';
 import { INITIALIZATION_POSTGRESQL_DB } from './constants';
 import { IConfigService } from '../config/config.service.interface';
-import { Collection } from '../collections/collection.model';
-import { User } from '../users/user.model';
-import { Image } from '../images/image.model';
-import { Price } from '../prices/price.model';
+import { Collection } from '../components/controller/collection.model';
+import { User } from '../components/users/user.model';
+import { Image } from '../components/images/image.model';
+import { Price } from '../components/prices/price.model';
+import { Stock } from '../components/stocks/stock.model';
+import { StockPrice } from '../components/stock-price/stock-price.model';
 
 @injectable()
 export class PostgresqlService {
@@ -35,6 +37,8 @@ export class PostgresqlService {
 		this.initImageModel();
 		this.initCollectionModel();
 		this.initPriceModel();
+		this.initStockModel();
+		this.initStockPriceModel();
 	}
 
 	async connect(): Promise<void> {
@@ -51,40 +55,6 @@ export class PostgresqlService {
 
 	async disconnect(): Promise<void> {
 		await this.client.close();
-	}
-
-	initCollectionModel(): void {
-		Collection.init(
-			{
-				id: {
-					type: DataTypes.INTEGER.UNSIGNED,
-					autoIncrement: true,
-					primaryKey: true,
-				},
-				name: {
-					type: new DataTypes.STRING(255),
-					allowNull: false,
-				},
-				backgroundId: {
-					type: new DataTypes.INTEGER(),
-					allowNull: false,
-					references: {
-						model: User,
-						key: 'id',
-					},
-				},
-				createdAt: DataTypes.DATE,
-				updatedAt: DataTypes.DATE,
-			},
-			{
-				underscored: true,
-				timestamps: true,
-				tableName: 'collection',
-				sequelize: this.client,
-			},
-		);
-		Collection.hasOne(Image, { foreignKey: 'id', as: 'backgroundImage' });
-		Image.belongsTo(Collection, { foreignKey: 'id' });
 	}
 
 	initUserModel(): void {
@@ -118,6 +88,35 @@ export class PostgresqlService {
 				sequelize: this.client,
 			},
 		);
+	}
+
+	initCollectionModel(): void {
+		Collection.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				name: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+				},
+				backgroundId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'collection',
+				sequelize: this.client,
+			},
+		);
+		Collection.belongsTo(Image, { foreignKey: 'backgroundId', as: 'backgroundImage' });
 	}
 
 	initImageModel(): void {
@@ -165,7 +164,7 @@ export class PostgresqlService {
 					allowNull: false,
 				},
 				currency: {
-					type: new DataTypes.STRING(3),
+					type: new DataTypes.ENUM('USD', 'EUR', 'UAH'),
 					allowNull: false,
 					validate: {
 						isIn: [['USD', 'EUR', 'UAH']],
@@ -181,5 +180,58 @@ export class PostgresqlService {
 				sequelize: this.client,
 			},
 		);
+	}
+
+	initStockModel(): void {
+		Stock.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				quantity: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				size: {
+					type: new DataTypes.ENUM('XS', 'S', 'M', 'L', 'XL'),
+					allowNull: false,
+					validate: {
+						isIn: [['XS', 'S', 'M', 'L', 'XL']],
+					},
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'stock',
+				sequelize: this.client,
+			},
+		);
+	}
+
+	initStockPriceModel(): void {
+		StockPrice.init(
+			{
+				stockId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+				priceId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+				},
+			},
+			{
+				underscored: true,
+				tableName: 'stock_price',
+				sequelize: this.client,
+				timestamps: false,
+			},
+		);
+		StockPrice.removeAttribute('id');
 	}
 }

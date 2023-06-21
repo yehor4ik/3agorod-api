@@ -1,16 +1,15 @@
-import { BaseController } from '../common/base.controller';
+import { BaseController } from '../../common/base.controller';
 import { IPriceController, IPriceParams } from './price.controller.interface';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { ILogger } from '../logger/logger.interface';
-import { IConfigService } from '../config/config.service.interface';
-import { RequestValidateMiddleware } from '../common/request-validate.middleware';
+import { TYPES } from '../../types';
+import { ILogger } from '../../logger/logger.interface';
+import { IConfigService } from '../../config/config.service.interface';
+import { RequestValidateMiddleware } from '../../common/request-validate.middleware';
 import { PriceCreateDto } from './dto/price-create.dto';
-import { HttpError } from '../errors/http-error.class';
 import { IPriceService } from './price.service.interface';
 import { Price } from './price.model';
-import { AuthMiddleware } from '../common/auth.middleware';
+import { AuthMiddleware } from '../../common/auth.middleware';
 import { PriceUpdateDto } from './dto/price-update.dto';
 
 @injectable()
@@ -25,7 +24,7 @@ export class PriceController extends BaseController implements IPriceController 
 		const secret = this.configService.get<string>('JWT_SECRET_KEY');
 
 		this.bindRoutes([
-			{ method: 'get', path: '/', func: this.get, middlewares: [new AuthMiddleware(secret)] },
+			{ method: 'get', path: '/', func: this.get, middlewares: [] },
 			{
 				method: 'delete',
 				path: '/:priceId',
@@ -51,38 +50,48 @@ export class PriceController extends BaseController implements IPriceController 
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const createdPrice = await this.priceService.create(body);
-		const isError = createdPrice instanceof HttpError;
-
-		isError ? next(createdPrice) : this.created<Price>(res, createdPrice);
+		try {
+			const createdPrice = await this.priceService.create(body);
+			this.created<Price>(res, createdPrice);
+		} catch (e) {
+			next(e);
+		}
 	}
 	async get(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const prices = await this.priceService.getAll();
-		const isError = prices instanceof HttpError;
-
-		isError ? next(prices) : this.created<Price[]>(res, prices);
+		try {
+			const prices = await this.priceService.getAll();
+			this.created<Price[]>(res, prices);
+		} catch (e) {
+			next(e);
+		}
 	}
 	async update(
 		req: Request<IPriceParams, {}, PriceUpdateDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const { body, params } = req;
-		const collectionId = params.priceId;
-		const updatedPrice = await this.priceService.update(body, collectionId);
-		const isError = updatedPrice instanceof HttpError;
+		try {
+			const { body, params } = req;
+			const collectionId = params.priceId;
+			const updatedPrice = await this.priceService.update(body, collectionId);
 
-		isError ? next(updatedPrice) : this.ok<Price>(res, updatedPrice);
+			this.ok<Price>(res, updatedPrice);
+		} catch (e) {
+			next(e);
+		}
 	}
 	async delete(
 		{ params }: Request<IPriceParams>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const { priceId } = params;
-		const result = await this.priceService.delete(priceId);
-		const isError = result instanceof HttpError;
+		try {
+			const { priceId } = params;
+			const result = await this.priceService.delete(priceId);
 
-		isError ? next(result) : this.ok(res, result);
+			this.ok(res, result);
+		} catch (e) {
+			next(e);
+		}
 	}
 }

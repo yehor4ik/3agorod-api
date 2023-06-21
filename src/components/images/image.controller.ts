@@ -4,13 +4,13 @@ import {
 	IGetImageParams,
 } from './image.controller.interface';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
-import { ILogger } from '../logger/logger.interface';
-import { IConfigService } from '../config/config.service.interface';
-import { BaseController } from '../common/base.controller';
-import { AuthMiddleware } from '../common/auth.middleware';
+import { TYPES } from '../../types';
+import { ILogger } from '../../logger/logger.interface';
+import { IConfigService } from '../../config/config.service.interface';
+import { BaseController } from '../../common/base.controller';
+import { AuthMiddleware } from '../../common/auth.middleware';
 import { IImageService } from './image.service.interface';
-import { HttpError } from '../errors/http-error.class';
+import { HttpError } from '../../errors/http-error.class';
 import { NextFunction, Request, Response } from 'express';
 import multer, { Multer } from 'multer';
 import { Image } from './image.model';
@@ -64,10 +64,13 @@ export class ImageController extends BaseController implements IImageController 
 			next(new HttpError(401, 'Image is required field', 'ImageController'));
 			return;
 		}
-		const newImage = await this.imageService.createImage(file);
-		const isError = newImage instanceof HttpError;
 
-		isError ? next(newImage) : this.created<Image>(res, newImage);
+		try {
+			const newImage = await this.imageService.createImage(file);
+			this.created<Image>(res, newImage);
+		} catch (e) {
+			next(e);
+		}
 	}
 
 	async get(req: Request<IGetImageParams>, res: Response): Promise<void> {
@@ -76,10 +79,12 @@ export class ImageController extends BaseController implements IImageController 
 	}
 
 	async delete(req: Request<IRemoveImageParams>, res: Response, next: NextFunction): Promise<void> {
-		const { imageId } = req.params;
-		const deletedImage = await this.imageService.deleteImage(imageId);
-		const isError = deletedImage instanceof HttpError;
-
-		isError ? next(deletedImage) : this.ok<null>(res, deletedImage);
+		try {
+			const { imageId } = req.params;
+			const deletedImage = await this.imageService.deleteImage(imageId);
+			this.ok<null>(res, deletedImage);
+		} catch (e) {
+			next(e);
+		}
 	}
 }

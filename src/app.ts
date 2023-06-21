@@ -1,6 +1,6 @@
 import express, { Express } from 'express';
 import { Server } from 'http';
-import { UserController } from './users/user.controller';
+import { UserController } from './components/users/user.controller';
 import { ILogger } from './logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
@@ -8,10 +8,11 @@ import { TYPES } from './types';
 import { IExceptionFilter } from './errors/exception.filter.interface';
 import { json } from 'body-parser';
 import { PostgresqlService } from './database/postgresql.service';
-import { CollectionController } from './collections/collection.controller';
+import { CollectionController } from './components/controller/collection.controller';
 import cors from 'cors';
-import { ImageController } from './images/image.controller';
-import { PriceController } from './prices/price.controller';
+import { ImageController } from './components/images/image.controller';
+import { PriceController } from './components/prices/price.controller';
+import { StockController } from './components/stocks/stock.controller';
 
 interface ICorsOptions {
 	origin: string;
@@ -34,6 +35,7 @@ export class App {
 		@inject(TYPES.ImageController)
 		private readonly imageController: ImageController,
 		@inject(TYPES.PriceController) private readonly priceController: PriceController,
+		@inject(TYPES.StockController) private readonly stockController: StockController,
 	) {
 		this.app = express();
 		this.port = 8000;
@@ -51,6 +53,7 @@ export class App {
 		this.app.use('/collections', this.collectionController.router);
 		this.app.use('/images', this.imageController.router);
 		this.app.use('/prices', this.priceController.router);
+		this.app.use('/stocks', this.stockController.router);
 	}
 
 	useExceptionFilters(): void {

@@ -8,4 +8,5 @@ export interface IPriceRepository {
 	getAllPrices: () => Promise<Price[]>;
 	updatePrice: (currentPrice: Price, dto: PriceUpdateDto) => Promise<Price | null>;
 	deletedPriceById: (priceId: number) => Promise<null>;
+	createManyPrices: (dto: PriceCreateDto[]) => Promise<Price[] | null>;
 }

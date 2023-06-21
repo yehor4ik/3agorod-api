@@ -1,15 +1,14 @@
-import { BaseController } from '../common/base.controller';
+import { BaseController } from '../../common/base.controller';
 import { NextFunction, Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
-import { ILogger } from '../logger/logger.interface';
-import { TYPES } from '../types';
+import { ILogger } from '../../logger/logger.interface';
+import { TYPES } from '../../types';
 import 'reflect-metadata';
 import { IUserController } from './user.controller.interface';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UsersService } from './users.service';
-import { HttpError } from '../errors/http-error.class';
-import { RequestValidateMiddleware } from '../common/request-validate.middleware';
+import { RequestValidateMiddleware } from '../../common/request-validate.middleware';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -40,10 +39,12 @@ export class UserController extends BaseController implements IUserController {
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const createdUser = await this.userService.createUser(body);
-		const isError = createdUser instanceof HttpError;
-
-		isError ? next(createdUser) : this.ok(res, createdUser);
+		try {
+			const createdUser = await this.userService.createUser(body);
+			this.ok(res, createdUser);
+		} catch (e) {
+			next(e);
+		}
 	}
 
 	async login(
@@ -51,9 +52,11 @@ export class UserController extends BaseController implements IUserController {
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const result = await this.userService.loginUser(body);
-		const isError = result instanceof HttpError;
-
-		isError ? next(result) : this.ok(res, result);
+		try {
+			const result = await this.userService.loginUser(body);
+			this.ok(res, result);
+		} catch (e) {
+			next(e);
+		}
 	}
 }
