@@ -1,21 +1,21 @@
 import { injectable } from 'inversify';
 import { IStockPriceRepository } from './stock-price.repository.interface';
-import { StockPrice } from './stock-price.model';
+import { StockPrices } from './stock-price.model';
 import { HttpError } from '../../errors/http-error.class';
 
 @injectable()
 export class StockPriceRepository implements IStockPriceRepository {
-	async create(dto: StockPrice[]): Promise<StockPrice[] | null> {
+	async create(dto: StockPrices[]): Promise<StockPrices[] | null> {
 		try {
-			const result = await StockPrice.bulkCreate(dto);
+			const result = await StockPrices.bulkCreate(dto);
 			return result ?? null;
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'StockPriceRepository');
 		}
 	}
-	async getByStockId(stockId: number): Promise<StockPrice[]> {
+	async getByStockId(stockId: number): Promise<StockPrices[]> {
 		try {
-			const result = await StockPrice.findAll({ where: { stockId } });
+			const result = await StockPrices.findAll({ where: { stockId } });
 			return result ?? [];
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'StockPriceRepository');
@@ -23,7 +23,7 @@ export class StockPriceRepository implements IStockPriceRepository {
 	}
 	async deleteByStockId(stockId: number): Promise<null> {
 		try {
-			await StockPrice.destroy({ where: { stockId } });
+			await StockPrices.destroy({ where: { stockId } });
 			return null;
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'StockPriceRepository');

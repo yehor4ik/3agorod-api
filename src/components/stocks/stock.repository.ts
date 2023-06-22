@@ -4,6 +4,7 @@ import { IStockCreationAttributes, Stock } from './stock.model';
 import { StockUpdateDto } from './dto/stock-update.dto';
 import { HttpError } from '../../errors/http-error.class';
 import { Error } from 'sequelize';
+import { Price } from '../prices/price.model';
 
 @injectable()
 export class StockRepository implements IStockRepository {
@@ -12,18 +13,23 @@ export class StockRepository implements IStockRepository {
 			const newStock = await Stock.create(dto);
 			return newStock ?? null;
 		} catch (e) {
-			throw new HttpError(500, (e as Error).message, 'StockRepository');
+			throw new HttpError(500, (e as Error).message, 'StockRepository.create');
 		}
 	}
 	async getById(stockId: number): Promise<Stock | null> {
 		try {
 			const stock = await Stock.findOne({
 				where: { id: stockId },
+				include: {
+					model: Price,
+					through: { attributes: [] },
+					as: 'prices',
+				},
 			});
 
 			return stock ?? null;
 		} catch (e) {
-			throw new HttpError(500, (e as Error).message, 'StockRepository');
+			throw new HttpError(500, (e as Error).message, 'StockRepository.getById');
 		}
 	}
 
@@ -32,7 +38,7 @@ export class StockRepository implements IStockRepository {
 			const stocks = await Stock.findAll();
 			return stocks ?? [];
 		} catch (e) {
-			throw new HttpError(500, (e as Error).message, 'StockRepository');
+			throw new HttpError(500, (e as Error).message, 'StockRepository.getAll');
 		}
 	}
 
@@ -42,7 +48,7 @@ export class StockRepository implements IStockRepository {
 
 			return updatedStock ?? null;
 		} catch (e) {
-			throw new HttpError(500, (e as Error).message, 'StockRepository');
+			throw new HttpError(500, (e as Error).message, 'StockRepository.update');
 		}
 	}
 

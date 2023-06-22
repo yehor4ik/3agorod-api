@@ -4,7 +4,7 @@ import { StockUpdateDto } from './dto/stock-update.dto';
 import { ICreateStockResponse } from './types/create-stock-response.interface';
 
 export interface IStockService {
-	create: (dto: StockCreateDto) => Promise<ICreateStockResponse>;
+	create: (dto: StockCreateDto) => Promise<Stock>;
 	getAll: () => Promise<Stock[]>;
 	update: (dto: StockUpdateDto, stockId: string) => Promise<Stock>;
 	delete: (stockId: string) => Promise<null>;

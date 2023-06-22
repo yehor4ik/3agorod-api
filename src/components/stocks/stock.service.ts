@@ -6,10 +6,9 @@ import { StockCreateDto } from './dto/stock-create.dto';
 import { StockUpdateDto } from './dto/stock-update.dto';
 import { Stock } from './stock.model';
 import { IStockRepository } from './stock.repository.interface';
-import { IStockPriceRepository } from '../stock-price/stock-price.repository.interface';
+import { IStockPriceRepository } from '../stock-prices/stock-price.repository.interface';
 import { IPriceRepository } from '../prices/price.repository.interface';
-import { StockPrice } from '../stock-price/stock-price.model';
-import { ICreateStockResponse } from './types/create-stock-response.interface';
+import { StockPrices } from '../stock-prices/stock-price.model';
 
 @injectable()
 export class StockService implements IStockService {
@@ -19,23 +18,29 @@ export class StockService implements IStockService {
 		@inject(TYPES.StockPriceRepository)
 		private readonly stockPriceRepository: IStockPriceRepository,
 	) {}
-	async create(dto: StockCreateDto): Promise<ICreateStockResponse> {
+	async create(dto: StockCreateDto): Promise<Stock> {
 		const { prices, ...restDto } = dto;
 
-		const createdStock = await this.stockRepository.create(restDto);
-		const createdPrice = await this.priceRepository.createManyPrices(prices);
+		const stock = await this.stockRepository.create(restDto);
+		const pricesResult = await this.priceRepository.createManyPrices(prices);
 
-		if (!createdStock || !createdPrice) {
-			throw new HttpError(500, 'Stock has been not created', 'StockService');
+		if (!stock) {
+			throw new HttpError(500, 'Stock has been not saved', 'StockService');
+		}
+		if (!pricesResult) {
+			throw new HttpError(500, 'Prices has been not saved', 'StockService');
 		}
 
-		const stockPriceDbQuery = createdPrice.map((price) => ({
-			stockId: createdStock.id,
-			priceId: price.id,
-		})) as StockPrice[];
+		const query = pricesResult.map((price) => ({ stockId: stock.id, priceId: price.id }));
+		await this.stockPriceRepository.create(query as StockPrices[]);
 
-		await this.stockPriceRepository.create(stockPriceDbQuery);
-		return { ...createdStock.dataValues, prices: createdPrice };
+		const result = await this.stockRepository.getById(stock.id);
+
+		if (!result) {
+			throw new HttpError(404, `Stock by this ID: ${stock.id} is not fined`, 'StockService');
+		}
+
+		return result;
 	}
 
 	async getAll(): Promise<Stock[]> {

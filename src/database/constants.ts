@@ -47,7 +47,7 @@ export const INITIALIZATION_POSTGRESQL_DB = `
         updated_at        DATE
     );
 
-    CREATE TABLE IF NOT EXISTS stock_price
+    CREATE TABLE IF NOT EXISTS stock_prices
     (
         stock_id INTEGER NOT NULL,
         price_id INTEGER NOT NULL,

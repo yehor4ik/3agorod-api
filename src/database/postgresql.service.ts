@@ -9,7 +9,7 @@ import { User } from '../components/users/user.model';
 import { Image } from '../components/images/image.model';
 import { Price } from '../components/prices/price.model';
 import { Stock } from '../components/stocks/stock.model';
-import { StockPrice } from '../components/stock-price/stock-price.model';
+import { StockPrices } from '../components/stock-prices/stock-price.model';
 
 @injectable()
 export class PostgresqlService {
@@ -38,7 +38,7 @@ export class PostgresqlService {
 		this.initCollectionModel();
 		this.initPriceModel();
 		this.initStockModel();
-		this.initStockPriceModel();
+		this.initStockPricesModel();
 	}
 
 	async connect(): Promise<void> {
@@ -213,25 +213,35 @@ export class PostgresqlService {
 		);
 	}
 
-	initStockPriceModel(): void {
-		StockPrice.init(
+	initStockPricesModel(): void {
+		StockPrices.init(
 			{
 				stockId: {
 					type: new DataTypes.INTEGER(),
 					allowNull: false,
+					references: {
+						model: Stock,
+						key: 'id',
+					},
 				},
 				priceId: {
 					type: new DataTypes.INTEGER(),
 					allowNull: false,
+					references: {
+						model: Price,
+						key: 'id',
+					},
 				},
 			},
 			{
 				underscored: true,
-				tableName: 'stock_price',
+				tableName: 'stock_prices',
 				sequelize: this.client,
 				timestamps: false,
 			},
 		);
-		StockPrice.removeAttribute('id');
+		StockPrices.removeAttribute('id');
+		Stock.belongsToMany(Price, { through: StockPrices, as: 'prices' });
+		Price.belongsToMany(Stock, { through: StockPrices });
 	}
 }
