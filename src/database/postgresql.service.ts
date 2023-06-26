@@ -2,7 +2,6 @@ import { inject, injectable } from 'inversify';
 import { Dialect, Sequelize, DataTypes } from 'sequelize';
 import { TYPES } from '../types';
 import { ILogger } from '../logger/logger.interface';
-import { INITIALIZATION_POSTGRESQL_DB } from './constants';
 import { IConfigService } from '../config/config.service.interface';
 import { Collection } from '../components/controller/collection.model';
 import { User } from '../components/users/user.model';
@@ -32,6 +31,7 @@ export class PostgresqlService {
 			define: {
 				timestamps: true,
 			},
+			logging: false,
 		});
 		this.initUserModel();
 		this.initImageModel();
@@ -43,8 +43,7 @@ export class PostgresqlService {
 
 	async connect(): Promise<void> {
 		try {
-			await this.client.authenticate();
-			await this.client.query(INITIALIZATION_POSTGRESQL_DB);
+			await this.client.sync({ force: true });
 			this.logger.log('[PostgresqlService] Database has been connected');
 		} catch (e) {
 			if (e instanceof Error) {
@@ -160,12 +159,14 @@ export class PostgresqlService {
 					primaryKey: true,
 				},
 				value: {
-					type: new DataTypes.INTEGER(),
+					type: new DataTypes.FLOAT(),
 					allowNull: false,
+					defaultValue: 0,
 				},
 				currency: {
 					type: new DataTypes.ENUM('USD', 'EUR', 'UAH'),
 					allowNull: false,
+					unique: true,
 					validate: {
 						isIn: [['USD', 'EUR', 'UAH']],
 					},
@@ -197,6 +198,7 @@ export class PostgresqlService {
 				size: {
 					type: new DataTypes.ENUM('XS', 'S', 'M', 'L', 'XL'),
 					allowNull: false,
+					unique: true,
 					validate: {
 						isIn: [['XS', 'S', 'M', 'L', 'XL']],
 					},

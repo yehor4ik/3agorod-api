@@ -23,6 +23,4 @@ export class Stock extends Model<InferAttributes<Stock>, IStockCreationAttribute
 
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date;
-
-	public addPrices!: BelongsToManyAddAssociationMixin<Price[], number>;
 }
