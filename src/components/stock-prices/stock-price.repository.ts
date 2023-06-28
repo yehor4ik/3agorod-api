@@ -2,13 +2,16 @@ import { injectable } from 'inversify';
 import { IStockPriceRepository } from './stock-price.repository.interface';
 import { StockPrices } from './stock-price.model';
 import { HttpError } from '../../errors/http-error.class';
+import { Attributes, CreateOptions } from 'sequelize/types/model';
 
 @injectable()
 export class StockPriceRepository implements IStockPriceRepository {
-	async create(dto: StockPrices[]): Promise<StockPrices[] | null> {
+	async create(
+		dto: StockPrices[],
+		options?: CreateOptions<Attributes<StockPrices>>,
+	): Promise<StockPrices[]> {
 		try {
-			const result = await StockPrices.bulkCreate(dto);
-			return result ?? null;
+			return await StockPrices.bulkCreate(dto, options);
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'StockPriceRepository');
 		}

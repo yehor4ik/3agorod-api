@@ -4,6 +4,7 @@ import { Price } from './price.model';
 import { injectable } from 'inversify';
 import { PriceUpdateDto } from './dto/price-update.dto';
 import { HttpError } from '../../errors/http-error.class';
+import { Attributes, CreateOptions } from 'sequelize/types/model';
 
 @injectable()
 export class PriceRepository implements IPriceRepository {
@@ -16,10 +17,12 @@ export class PriceRepository implements IPriceRepository {
 		}
 	}
 
-	async createManyPrices(dto: PriceCreateDto[]): Promise<Price[] | null> {
+	async createManyPrices(
+		dto: PriceCreateDto[],
+		options?: CreateOptions<Attributes<Price>>,
+	): Promise<Price[]> {
 		try {
-			const result = await Price.bulkCreate(dto);
-			return result ?? null;
+			return await Price.bulkCreate(dto, options);
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'PriceRepository');
 		}

@@ -43,7 +43,7 @@ export class PostgresqlService {
 
 	async connect(): Promise<void> {
 		try {
-			await this.client.sync({ force: true });
+			await this.client.sync();
 			this.logger.log('[PostgresqlService] Database has been connected');
 		} catch (e) {
 			if (e instanceof Error) {
