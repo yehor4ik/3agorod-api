@@ -4,7 +4,7 @@ import { Price } from './price.model';
 import { injectable } from 'inversify';
 import { PriceUpdateDto } from './dto/price-update.dto';
 import { HttpError } from '../../errors/http-error.class';
-import { Attributes, CreateOptions } from 'sequelize/types/model';
+import { Attributes, CreateOptions, UpdateOptions } from 'sequelize/types/model';
 
 @injectable()
 export class PriceRepository implements IPriceRepository {
@@ -53,6 +53,26 @@ export class PriceRepository implements IPriceRepository {
 			const updatedPrice = currentPrice.update(dto);
 
 			return updatedPrice ?? null;
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
+	}
+
+	async updatePriceById(
+		id: number,
+		dto: PriceUpdateDto,
+		options?: Omit<UpdateOptions<Attributes<Price>>, 'where'>,
+	): Promise<Price> {
+		try {
+			const currentOptions: UpdateOptions<Attributes<Price>> = {
+				where: { id },
+				returning: true,
+				...(options ?? {}),
+			};
+			const result = await Price.update(dto, currentOptions);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			return result[1][0];
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'PriceRepository');
 		}

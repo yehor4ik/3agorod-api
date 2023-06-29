@@ -24,12 +24,12 @@ export class StockService implements IStockService {
 		const transaction = await this.postgresqlService.client.transaction();
 
 		try {
-			const { prices, ...restDto } = dto;
+			const { prices: pricesDto, ...stockDto } = dto;
 
-			const stock = await this.stockRepository.create(restDto, { transaction });
-			const pricesResult = await this.priceRepository.createManyPrices(prices, { transaction });
+			const stock = await this.stockRepository.create(stockDto, { transaction });
+			const prices = await this.priceRepository.createManyPrices(pricesDto, { transaction });
 
-			const query = pricesResult.map((price) => ({ stockId: stock.id, priceId: price.id }));
+			const query = prices.map((price) => ({ stockId: stock.id, priceId: price.id }));
 			await this.stockPriceRepository.create(query as StockPrices[], { transaction });
 
 			await transaction.commit();
@@ -57,20 +57,40 @@ export class StockService implements IStockService {
 
 	async update(dto: StockUpdateDto, stockId: string): Promise<Stock> {
 		const id: number = +stockId;
+		const transaction = await this.postgresqlService.client.transaction();
+		const { prices: pricesDto, ...stockDto } = dto;
+		try {
+			const currentStock = await this.stockRepository.getById(+id, { transaction });
 
-		const currentStock = await this.stockRepository.getById(+id);
+			if (!currentStock) {
+				throw new HttpError(404, `Stock by this ID: ${id} is not found`, 'StockService');
+			}
 
-		if (!currentStock) {
-			throw new HttpError(404, `Stock with this ID: ${id} is not exist`, 'StockService');
+			const updatedStock = await this.stockRepository.update(currentStock, stockDto);
+
+			if (!updatedStock.prices) {
+				throw new HttpError(500, `Server Error`, 'StockService');
+			}
+
+			await Promise.all(
+				updatedStock.prices.map((price, idx) =>
+					this.priceRepository.updatePriceById(price.id, pricesDto[idx], { transaction }),
+				),
+			);
+			await transaction.commit();
+
+			const stockResult = await this.stockRepository.getById(+id);
+
+			return stockResult as Stock;
+		} catch (e) {
+			await transaction.rollback();
+
+			if (e instanceof HttpError) {
+				throw new HttpError(e.statusCode, e.message, e.context);
+			}
+
+			throw new HttpError(500, (e as Error).message, 'StockService');
 		}
-
-		const updatedStock = await this.stockRepository.update(currentStock, dto);
-
-		if (!updatedStock) {
-			throw new HttpError(500, `Stock with this ID: ${id} is not updated`, 'StockService');
-		}
-
-		return updatedStock;
 	}
 
 	async delete(stockId: string): Promise<null> {

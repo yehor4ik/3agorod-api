@@ -5,7 +5,12 @@ import { StockUpdateDto } from './dto/stock-update.dto';
 import { HttpError } from '../../errors/http-error.class';
 import { Error } from 'sequelize';
 import { Price } from '../prices/price.model';
-import { Attributes, CreateOptions, FindOptions } from 'sequelize/types/model';
+import {
+	Attributes,
+	CreateOptions,
+	FindOptions,
+	InstanceUpdateOptions,
+} from 'sequelize/types/model';
 
 @injectable()
 export class StockRepository implements IStockRepository {
@@ -58,11 +63,23 @@ export class StockRepository implements IStockRepository {
 		}
 	}
 
-	async update(currentStock: Stock, dto: StockUpdateDto): Promise<Stock | null> {
+	async update(
+		currentStock: Stock,
+		dto: Omit<StockUpdateDto, 'prices'>,
+		options?: InstanceUpdateOptions<IStockCreationAttributes>,
+	): Promise<Stock> {
 		try {
-			const updatedStock = currentStock.update(dto);
+			const currentOptions = {
+				include: {
+					model: Price,
+					through: { attributes: [] },
+					as: 'prices',
+				},
+				returning: true,
+				...(options ?? {}),
+			};
 
-			return updatedStock ?? null;
+			return currentStock.update(dto, currentOptions);
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'StockRepository.update');
 		}

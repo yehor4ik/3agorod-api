@@ -1,9 +1,4 @@
-import {
-	InferAttributes,
-	InferCreationAttributes,
-	Model,
-	BelongsToManyAddAssociationMixin,
-} from 'sequelize';
+import { InferAttributes, InferCreationAttributes, Model, Association } from 'sequelize';
 import { Price } from '../prices/price.model';
 
 export interface IStockCreationAttributes
@@ -20,6 +15,11 @@ export class Stock extends Model<InferAttributes<Stock>, IStockCreationAttribute
 	public id!: number;
 	public quantity!: number;
 	public size!: SizeTypes;
+
+	public readonly prices?: Price[];
+	public static associations: {
+		prices: Association<Stock, Price>;
+	};
 
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date;
