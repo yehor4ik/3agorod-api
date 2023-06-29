@@ -4,7 +4,7 @@ import { Price } from './price.model';
 import { injectable } from 'inversify';
 import { PriceUpdateDto } from './dto/price-update.dto';
 import { HttpError } from '../../errors/http-error.class';
-import { Attributes, CreateOptions, UpdateOptions } from 'sequelize/types/model';
+import { Attributes, CreateOptions, DestroyOptions, UpdateOptions } from 'sequelize/types/model';
 
 @injectable()
 export class PriceRepository implements IPriceRepository {
@@ -78,9 +78,16 @@ export class PriceRepository implements IPriceRepository {
 		}
 	}
 
-	async deletedPriceById(priceId: number): Promise<null> {
+	async deletedPriceById(
+		priceId: number,
+		options?: DestroyOptions<Attributes<Price>>,
+	): Promise<null> {
+		const currentOptions = {
+			where: { id: priceId },
+			...(options ?? {}),
+		};
 		try {
-			await Price.destroy({ where: { id: priceId } });
+			await Price.destroy(currentOptions);
 
 			return null;
 		} catch (e) {

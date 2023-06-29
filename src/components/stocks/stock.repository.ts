@@ -8,6 +8,7 @@ import { Price } from '../prices/price.model';
 import {
 	Attributes,
 	CreateOptions,
+	DestroyOptions,
 	FindOptions,
 	InstanceUpdateOptions,
 } from 'sequelize/types/model';
@@ -85,9 +86,13 @@ export class StockRepository implements IStockRepository {
 		}
 	}
 
-	async deletedById(stockId: number): Promise<null> {
+	async deletedById(stockId: number, options?: DestroyOptions<Attributes<Stock>>): Promise<null> {
 		try {
-			await Stock.destroy({ where: { id: stockId } });
+			const currentOptions = {
+				where: { id: stockId },
+				...(options ?? {}),
+			};
+			await Stock.destroy(currentOptions);
 
 			return null;
 		} catch (e) {

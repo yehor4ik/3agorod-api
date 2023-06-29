@@ -2,7 +2,7 @@ import { injectable } from 'inversify';
 import { IStockPriceRepository } from './stock-price.repository.interface';
 import { StockPrices } from './stock-price.model';
 import { HttpError } from '../../errors/http-error.class';
-import { Attributes, CreateOptions } from 'sequelize/types/model';
+import { Attributes, CreateOptions, DestroyOptions } from 'sequelize/types/model';
 
 @injectable()
 export class StockPriceRepository implements IStockPriceRepository {
@@ -24,9 +24,16 @@ export class StockPriceRepository implements IStockPriceRepository {
 			throw new HttpError(500, (e as Error).message, 'StockPriceRepository');
 		}
 	}
-	async deleteByStockId(stockId: number): Promise<null> {
+	async deleteByStockId(
+		stockId: number,
+		options?: DestroyOptions<Attributes<StockPrices>>,
+	): Promise<null> {
+		const currentOptions = {
+			where: { stockId },
+			...(options ?? {}),
+		};
 		try {
-			await StockPrices.destroy({ where: { stockId } });
+			await StockPrices.destroy(currentOptions);
 			return null;
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'StockPriceRepository');

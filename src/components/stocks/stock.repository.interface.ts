@@ -3,6 +3,7 @@ import { StockUpdateDto } from './dto/stock-update.dto';
 import {
 	Attributes,
 	CreateOptions,
+	DestroyOptions,
 	FindOptions,
 	InstanceUpdateOptions,
 } from 'sequelize/types/model';
@@ -19,5 +20,5 @@ export interface IStockRepository {
 		dto: Omit<StockUpdateDto, 'prices'>,
 		options?: InstanceUpdateOptions<IStockCreationAttributes>,
 	) => Promise<Stock>;
-	deletedById: (stockId: number) => Promise<null>;
+	deletedById: (stockId: number, options?: DestroyOptions<Attributes<Stock>>) => Promise<null>;
 }
