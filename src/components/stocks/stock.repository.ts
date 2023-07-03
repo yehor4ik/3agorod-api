@@ -12,6 +12,7 @@ import {
 	FindOptions,
 	InstanceUpdateOptions,
 } from 'sequelize/types/model';
+import { StockCreateDto } from './dto/stock-create.dto';
 
 @injectable()
 export class StockRepository implements IStockRepository {
@@ -83,6 +84,17 @@ export class StockRepository implements IStockRepository {
 			return currentStock.update(dto, currentOptions);
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'StockRepository.update');
+		}
+	}
+
+	async createMany(
+		dto: Omit<StockCreateDto, 'prices'>[],
+		options?: CreateOptions<Attributes<Stock>>,
+	): Promise<Stock[]> {
+		try {
+			return await Stock.bulkCreate(dto, options);
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'StockRepository.createMany');
 		}
 	}
 

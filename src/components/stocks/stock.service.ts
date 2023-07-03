@@ -20,7 +20,7 @@ export class StockService implements IStockService {
 		private readonly stockPriceRepository: IStockPriceRepository,
 		@inject(TYPES.PostgresqlService) private readonly postgresqlService: PostgresqlService,
 	) {}
-	async create(dto: StockCreateDto): Promise<any> {
+	async create(dto: StockCreateDto): Promise<Stock> {
 		const transaction = await this.postgresqlService.client.transaction();
 
 		try {

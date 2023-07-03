@@ -40,6 +40,16 @@ import { IStockRepository } from './components/stocks/stock.repository.interface
 import { StockRepository } from './components/stocks/stock.repository';
 import { IStockPriceRepository } from './components/stock-prices/stock-price.repository.interface';
 import { StockPriceRepository } from './components/stock-prices/stock-price.repository';
+import { IProductStocksRepository } from './components/product-stocks/product-stocks.repository.interface';
+import { ProductStocksRepository } from './components/product-stocks/product-stocks.repository';
+import { IProductImagesRepository } from './components/product-images/product-images.repository.interface';
+import { ProductImagesRepository } from './components/product-images/product-images.repository';
+import { IProductRepository } from './components/product/product.repository.interface';
+import { ProductRepository } from './components/product/product.repository';
+import { IProductService } from './components/product/product.service.interface';
+import { ProductService } from './components/product/product.service';
+import { IProductController } from './components/product/product.controller.interface';
+import { ProductController } from './components/product/product.controller';
 
 export interface IBootstrapReturn {
 	appContainer: Container;
@@ -67,6 +77,11 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IStockService>(TYPES.StockService).to(StockService);
 	bind<IStockRepository>(TYPES.StockRepository).to(StockRepository);
 	bind<IStockPriceRepository>(TYPES.StockPriceRepository).to(StockPriceRepository);
+	bind<IProductStocksRepository>(TYPES.ProductStocksRepository).to(ProductStocksRepository);
+	bind<IProductImagesRepository>(TYPES.ProductImagesRepository).to(ProductImagesRepository);
+	bind<IProductRepository>(TYPES.ProductRepository).to(ProductRepository);
+	bind<IProductService>(TYPES.ProductService).to(ProductService);
+	bind<IProductController>(TYPES.ProductController).to(ProductController);
 	bind<App>(TYPES.Application).to(App);
 });
 
