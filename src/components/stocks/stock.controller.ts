@@ -53,7 +53,7 @@ export class StockController extends BaseController implements IStockController 
 	): Promise<void> {
 		try {
 			const createdStock = await this.stockService.create(body);
-			this.created<ICreateStockResponse>(res, createdStock);
+			this.created<Stock>(res, createdStock);
 		} catch (e) {
 			next(e);
 		}

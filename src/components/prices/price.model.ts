@@ -1,6 +1,6 @@
 import { InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 
-interface PriceCreationAttributes
+export interface PriceCreationAttributes
 	extends Omit<InferCreationAttributes<Price>, 'id' | 'createdAt' | 'updatedAt'> {}
 
 export enum CurrencyTypes {

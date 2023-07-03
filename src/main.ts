@@ -38,8 +38,8 @@ import { IStockService } from './components/stocks/stock.service.interface';
 import { StockService } from './components/stocks/stock.service';
 import { IStockRepository } from './components/stocks/stock.repository.interface';
 import { StockRepository } from './components/stocks/stock.repository';
-import { IStockPriceRepository } from './components/stock-price/stock-price.repository.interface';
-import { StockPriceRepository } from './components/stock-price/stock-price.repository';
+import { IStockPriceRepository } from './components/stock-prices/stock-price.repository.interface';
+import { StockPriceRepository } from './components/stock-prices/stock-price.repository';
 
 export interface IBootstrapReturn {
 	appContainer: Container;

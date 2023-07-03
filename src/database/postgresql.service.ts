@@ -2,14 +2,13 @@ import { inject, injectable } from 'inversify';
 import { Dialect, Sequelize, DataTypes } from 'sequelize';
 import { TYPES } from '../types';
 import { ILogger } from '../logger/logger.interface';
-import { INITIALIZATION_POSTGRESQL_DB } from './constants';
 import { IConfigService } from '../config/config.service.interface';
 import { Collection } from '../components/controller/collection.model';
 import { User } from '../components/users/user.model';
 import { Image } from '../components/images/image.model';
 import { Price } from '../components/prices/price.model';
 import { Stock } from '../components/stocks/stock.model';
-import { StockPrice } from '../components/stock-price/stock-price.model';
+import { StockPrices } from '../components/stock-prices/stock-price.model';
 
 @injectable()
 export class PostgresqlService {
@@ -32,19 +31,19 @@ export class PostgresqlService {
 			define: {
 				timestamps: true,
 			},
+			logging: false,
 		});
 		this.initUserModel();
 		this.initImageModel();
 		this.initCollectionModel();
 		this.initPriceModel();
 		this.initStockModel();
-		this.initStockPriceModel();
+		this.initStockPricesModel();
 	}
 
 	async connect(): Promise<void> {
 		try {
-			await this.client.authenticate();
-			await this.client.query(INITIALIZATION_POSTGRESQL_DB);
+			await this.client.sync();
 			this.logger.log('[PostgresqlService] Database has been connected');
 		} catch (e) {
 			if (e instanceof Error) {
@@ -160,12 +159,14 @@ export class PostgresqlService {
 					primaryKey: true,
 				},
 				value: {
-					type: new DataTypes.INTEGER(),
+					type: new DataTypes.FLOAT(),
 					allowNull: false,
+					defaultValue: 0,
 				},
 				currency: {
 					type: new DataTypes.ENUM('USD', 'EUR', 'UAH'),
 					allowNull: false,
+					unique: true,
 					validate: {
 						isIn: [['USD', 'EUR', 'UAH']],
 					},
@@ -197,6 +198,7 @@ export class PostgresqlService {
 				size: {
 					type: new DataTypes.ENUM('XS', 'S', 'M', 'L', 'XL'),
 					allowNull: false,
+					unique: true,
 					validate: {
 						isIn: [['XS', 'S', 'M', 'L', 'XL']],
 					},
@@ -213,25 +215,35 @@ export class PostgresqlService {
 		);
 	}
 
-	initStockPriceModel(): void {
-		StockPrice.init(
+	initStockPricesModel(): void {
+		StockPrices.init(
 			{
 				stockId: {
 					type: new DataTypes.INTEGER(),
 					allowNull: false,
+					references: {
+						model: Stock,
+						key: 'id',
+					},
 				},
 				priceId: {
 					type: new DataTypes.INTEGER(),
 					allowNull: false,
+					references: {
+						model: Price,
+						key: 'id',
+					},
 				},
 			},
 			{
 				underscored: true,
-				tableName: 'stock_price',
+				tableName: 'stock_prices',
 				sequelize: this.client,
 				timestamps: false,
 			},
 		);
-		StockPrice.removeAttribute('id');
+		StockPrices.removeAttribute('id');
+		Stock.belongsToMany(Price, { through: StockPrices, as: 'prices' });
+		Price.belongsToMany(Stock, { through: StockPrices });
 	}
 }

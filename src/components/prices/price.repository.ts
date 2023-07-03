@@ -4,6 +4,7 @@ import { Price } from './price.model';
 import { injectable } from 'inversify';
 import { PriceUpdateDto } from './dto/price-update.dto';
 import { HttpError } from '../../errors/http-error.class';
+import { Attributes, CreateOptions, DestroyOptions, UpdateOptions } from 'sequelize/types/model';
 
 @injectable()
 export class PriceRepository implements IPriceRepository {
@@ -16,10 +17,12 @@ export class PriceRepository implements IPriceRepository {
 		}
 	}
 
-	async createManyPrices(dto: PriceCreateDto[]): Promise<Price[] | null> {
+	async createManyPrices(
+		dto: PriceCreateDto[],
+		options?: CreateOptions<Attributes<Price>>,
+	): Promise<Price[]> {
 		try {
-			const result = await Price.bulkCreate(dto);
-			return result ?? null;
+			return await Price.bulkCreate(dto, options);
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'PriceRepository');
 		}
@@ -55,9 +58,36 @@ export class PriceRepository implements IPriceRepository {
 		}
 	}
 
-	async deletedPriceById(priceId: number): Promise<null> {
+	async updatePriceById(
+		id: number,
+		dto: PriceUpdateDto,
+		options?: Omit<UpdateOptions<Attributes<Price>>, 'where'>,
+	): Promise<Price> {
 		try {
-			await Price.destroy({ where: { id: priceId } });
+			const currentOptions: UpdateOptions<Attributes<Price>> = {
+				where: { id },
+				returning: true,
+				...(options ?? {}),
+			};
+			const result = await Price.update(dto, currentOptions);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			return result[1][0];
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'PriceRepository');
+		}
+	}
+
+	async deletedPriceById(
+		priceId: number,
+		options?: DestroyOptions<Attributes<Price>>,
+	): Promise<null> {
+		const currentOptions = {
+			where: { id: priceId },
+			...(options ?? {}),
+		};
+		try {
+			await Price.destroy(currentOptions);
 
 			return null;
 		} catch (e) {
