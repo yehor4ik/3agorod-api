@@ -281,7 +281,7 @@ export class PostgresqlService {
 				sequelize: this.client,
 			},
 		);
-		Product.belongsTo(Image, { foreignKey: 'collectionId', as: 'collection' });
+		Product.belongsTo(Collection, { foreignKey: 'collectionId', as: 'collection' });
 	}
 
 	initProductImagesModel(): void {

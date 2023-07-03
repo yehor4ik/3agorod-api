@@ -5,10 +5,11 @@ import { TYPES } from '../../types';
 import { ILogger } from '../../logger/logger.interface';
 import { IConfigService } from '../../config/config.service.interface';
 import { RequestValidateMiddleware } from '../../common/request-validate.middleware';
-import { IProductController } from './product.controller.interface';
+import { IProductController, IProductParams } from './product.controller.interface';
 import { IProductService } from './product.service.interface';
 import { Product } from './product.model';
 import { ProductCreateDto } from './dto/product-create.dto';
+import { ProductUpdateDto } from './dto/product-update.dto';
 
 @injectable()
 export class ProductController extends BaseController implements IProductController {
@@ -37,12 +38,14 @@ export class ProductController extends BaseController implements IProductControl
 					/*new AuthMiddleware(secret),*/ new RequestValidateMiddleware(ProductCreateDto),
 				],
 			},
-			// {
-			// 	method: 'put',
-			// 	path: '/:stockId',
-			// 	func: this.update,
-			// 	middlewares: [new AuthMiddleware(secret), new RequestValidateMiddleware(StockUpdateDto)],
-			// },
+			{
+				method: 'put',
+				path: '/:productId',
+				func: this.update,
+				middlewares: [
+					/*new AuthMiddleware(secret),*/ new RequestValidateMiddleware(ProductUpdateDto),
+				],
+			},
 		]);
 	}
 	async create(
@@ -65,20 +68,20 @@ export class ProductController extends BaseController implements IProductControl
 			next(e);
 		}
 	}
-	// async update(
-	// 	req: Request<IStockParams, {}, StockUpdateDto>,
-	// 	res: Response,
-	// 	next: NextFunction,
-	// ): Promise<void> {
-	// 	try {
-	// 		const { body, params } = req;
-	// 		const stockId = params.stockId;
-	// 		const updatedStock = await this.stockService.update(body, stockId);
-	// 		this.ok<Stock>(res, updatedStock);
-	// 	} catch (e) {
-	// 		next(e);
-	// 	}
-	// }
+	async update(
+		req: Request<IProductParams, {}, ProductUpdateDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { body, params } = req;
+			const productId = params.productId;
+			const updatedStock = await this.productService.update(body, productId);
+			this.ok<Product>(res, updatedStock);
+		} catch (e) {
+			next(e);
+		}
+	}
 	// async delete(
 	// 	{ params }: Request<IStockParams>,
 	// 	res: Response,

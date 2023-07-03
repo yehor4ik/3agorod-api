@@ -66,7 +66,9 @@ export class StockService implements IStockService {
 				throw new HttpError(404, `Stock by this ID: ${id} is not found`, 'StockService');
 			}
 
-			const updatedStock = await this.stockRepository.update(currentStock, stockDto);
+			const updatedStock = await this.stockRepository.update(currentStock, stockDto, {
+				transaction,
+			});
 
 			if (!updatedStock.prices) {
 				throw new HttpError(500, `Server Error`, 'StockService');

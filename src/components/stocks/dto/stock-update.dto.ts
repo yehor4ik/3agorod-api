@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { SizeTypes } from '../stock.model';
 import { Type } from 'class-transformer';
-import { PriceCreateDto } from '../../prices/dto/price-create.dto';
+import { PriceUpdateDto } from '../../prices/dto/price-update.dto';
 
 export class StockUpdateDto {
 	@IsNumber()
@@ -25,7 +25,7 @@ export class StockUpdateDto {
 	@ArrayNotEmpty()
 	@ArrayMinSize(1)
 	@ValidateNested({ message: 'hello' })
-	@Type(() => PriceCreateDto)
+	@Type(() => PriceUpdateDto)
 	@IsOptional()
-	prices: PriceCreateDto[];
+	prices: PriceUpdateDto[];
 }

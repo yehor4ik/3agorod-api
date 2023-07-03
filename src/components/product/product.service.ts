@@ -5,7 +5,10 @@ import { StockPrices } from '../stock-prices/stock-price.model';
 import { PostgresqlService } from '../../database/postgresql.service';
 import { IProductService } from './product.service.interface';
 import { IImageRepository } from '../images/image.repository.interface';
-import { IProductImagesRepository } from '../product-images/product-images.repository.interface';
+import {
+	IProductImagesRepository,
+	IUpdateImageIdQuery,
+} from '../product-images/product-images.repository.interface';
 import { IProductStocksRepository } from '../product-stocks/product-stocks.repository.interface';
 import { ProductCreateDto } from './dto/product-create.dto';
 import { Product } from './product.model';
@@ -15,6 +18,7 @@ import { IPriceRepository } from '../prices/price.repository.interface';
 import { IStockPriceRepository } from '../stock-prices/stock-price.repository.interface';
 import { ProductStocks } from '../product-stocks/product-srocks.model';
 import { ProductImages } from '../product-images/product-images.model';
+import { ProductUpdateDto } from './dto/product-update.dto';
 
 @injectable()
 export class ProductService implements IProductService {
@@ -92,44 +96,75 @@ export class ProductService implements IProductService {
 	async getAll(): Promise<Product[]> {
 		return await this.productRepository.getAll();
 	}
+	async update(dto: ProductUpdateDto, productId: string): Promise<Product> {
+		const id: number = +productId;
+		const transaction = await this.postgresqlService.client.transaction();
+		const { stocks: stocksDto, images: imagesIds, ...productDto } = dto;
+		try {
+			const currentProduct = await this.productRepository.getById(id, { transaction });
 
-	// async update(dto: ProductCreateDto, productId: string): Promise<Product> {
-	// 	const id: number = +productId;
-	// 	const transaction = await this.postgresqlService.client.transaction();
-	// 	const { prices: pricesDto, ...stockDto } = dto;
-	// 	try {
-	// 		const currentStock = await this.stockRepository.getById(+id, { transaction });
-	//
-	// 		if (!currentStock) {
-	// 			throw new HttpError(404, `Stock by this ID: ${id} is not found`, 'StockService');
-	// 		}
-	//
-	// 		const updatedStock = await this.stockRepository.update(currentStock, stockDto);
-	//
-	// 		if (!updatedStock.prices) {
-	// 			throw new HttpError(500, `Server Error`, 'StockService');
-	// 		}
-	//
-	// 		await Promise.all(
-	// 			updatedStock.prices.map((price, idx) =>
-	// 				this.priceRepository.updatePriceById(price.id, pricesDto[idx], { transaction }),
-	// 			),
-	// 		);
-	// 		await transaction.commit();
-	//
-	// 		const stockResult = await this.stockRepository.getById(+id);
-	//
-	// 		return stockResult as Stock;
-	// 	} catch (e) {
-	// 		await transaction.rollback();
-	//
-	// 		if (e instanceof HttpError) {
-	// 			throw new HttpError(e.statusCode, e.message, e.context);
-	// 		}
-	//
-	// 		throw new HttpError(500, (e as Error).message, 'StockService');
-	// 	}
-	// }
+			if (!currentProduct) {
+				throw new HttpError(404, `Product by this ID: ${id} is not found`, 'ProductService');
+			}
+
+			const updatedProduct = await this.productRepository.update(currentProduct, productDto, {
+				transaction,
+			});
+
+			if (!updatedProduct.stocks) {
+				throw new HttpError(500, `Server Error`, 'ProductService');
+			}
+
+			await Promise.all(
+				updatedProduct.stocks.map(async (stock, idx) => {
+					const oldStock = await this.stockRepository.getById(stock.id);
+					const { prices: pricesDto, ...restStockDto } = stocksDto[idx];
+
+					if (!oldStock) {
+						throw new HttpError(
+							404,
+							`Stocks by this ID: ${stock.id} is not found`,
+							'ProductService',
+						);
+					}
+					const newStock = await this.stockRepository.update(oldStock, restStockDto, {
+						transaction,
+					});
+					await Promise.all(
+						(newStock?.prices ?? []).map((price, priceIdx) =>
+							this.priceRepository.updatePriceById(price.id, pricesDto[priceIdx], {
+								transaction,
+							}),
+						),
+					);
+				}),
+			);
+
+			await Promise.all(
+				(updatedProduct?.images ?? []).map((imageId, idx) => {
+					const query: IUpdateImageIdQuery = {
+						productId: currentProduct.id,
+						imageId: imageId.id,
+						newImageId: imagesIds[idx],
+					};
+					return this.productImagesRepository.updateImageId(query, { transaction });
+				}),
+			);
+
+			await transaction.commit();
+
+			return (await this.productRepository.getById(id)) as Product;
+		} catch (e) {
+			await transaction.rollback();
+
+			if (e instanceof HttpError) {
+				throw new HttpError(e.statusCode, e.message, e.context);
+			}
+
+			throw new HttpError(500, (e as Error).message, 'StockService');
+		}
+	}
+
 	//
 	// async delete(stockId: string): Promise<null> {
 	// 	const id: number = +stockId;

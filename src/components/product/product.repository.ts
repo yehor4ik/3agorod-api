@@ -13,6 +13,7 @@ import { IProductCreationAttributes, Product } from './product.model';
 import { Image } from '../images/image.model';
 import { Stock } from '../stocks/stock.model';
 import { Price } from '../prices/price.model';
+import { Collection } from '../controller/collection.model';
 
 @injectable()
 export class ProductRepository implements IProductRepository {
@@ -41,6 +42,7 @@ export class ProductRepository implements IProductRepository {
 					through: { attributes: [] },
 					as: 'images',
 				},
+				{ model: Collection, as: 'collection' },
 				{
 					model: Stock,
 					through: { attributes: [] },
@@ -73,6 +75,7 @@ export class ProductRepository implements IProductRepository {
 						through: { attributes: [] },
 						as: 'images',
 					},
+					{ model: Collection, as: 'collection' },
 					{
 						model: Stock,
 						through: { attributes: [] },
