@@ -10,6 +10,7 @@ import { IProductService } from './product.service.interface';
 import { Product } from './product.model';
 import { ProductCreateDto } from './dto/product-create.dto';
 import { ProductUpdateDto } from './dto/product-update.dto';
+import { AuthMiddleware } from '../../common/auth.middleware';
 
 @injectable()
 export class ProductController extends BaseController implements IProductController {
@@ -24,27 +25,23 @@ export class ProductController extends BaseController implements IProductControl
 
 		this.bindRoutes([
 			{ method: 'get', path: '/', func: this.get },
-			// {
-			// 	method: 'delete',
-			// 	path: '/:stockId',
-			// 	func: this.delete,
-			// 	middlewares: [new AuthMiddleware(secret)],
-			// },
+			{
+				method: 'delete',
+				path: '/:productId',
+				func: this.delete,
+				middlewares: [new AuthMiddleware(secret)],
+			},
 			{
 				method: 'post',
 				path: '/',
 				func: this.create,
-				middlewares: [
-					/*new AuthMiddleware(secret),*/ new RequestValidateMiddleware(ProductCreateDto),
-				],
+				middlewares: [new AuthMiddleware(secret), new RequestValidateMiddleware(ProductCreateDto)],
 			},
 			{
 				method: 'put',
 				path: '/:productId',
 				func: this.update,
-				middlewares: [
-					/*new AuthMiddleware(secret),*/ new RequestValidateMiddleware(ProductUpdateDto),
-				],
+				middlewares: [new AuthMiddleware(secret), new RequestValidateMiddleware(ProductUpdateDto)],
 			},
 		]);
 	}
@@ -82,17 +79,18 @@ export class ProductController extends BaseController implements IProductControl
 			next(e);
 		}
 	}
-	// async delete(
-	// 	{ params }: Request<IStockParams>,
-	// 	res: Response,
-	// 	next: NextFunction,
-	// ): Promise<void> {
-	// 	try {
-	// 		const { stockId } = params;
-	// 		const result = await this.stockService.delete(stockId);
-	// 		this.ok(res, result);
-	// 	} catch (e) {
-	// 		next(e);
-	// 	}
-	// }
+
+	async delete(
+		{ params }: Request<IProductParams>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { productId } = params;
+			const result = await this.productService.delete(productId);
+			this.ok(res, result);
+		} catch (e) {
+			next(e);
+		}
+	}
 }

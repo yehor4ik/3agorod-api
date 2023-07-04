@@ -165,37 +165,57 @@ export class ProductService implements IProductService {
 		}
 	}
 
-	//
-	// async delete(stockId: string): Promise<null> {
-	// 	const id: number = +stockId;
-	// 	const transaction = await this.postgresqlService.client.transaction();
-	// 	try {
-	// 		const currentStock = await this.stockRepository.getById(id, { transaction });
-	//
-	// 		if (!currentStock) {
-	// 			throw new HttpError(404, `Stock with this ID: ${id} is not exist`, 'StockService');
-	// 		}
-	//
-	// 		await this.stockRepository.deletedById(id, { transaction });
-	//
-	// 		await Promise.all(
-	// 			(currentStock.prices ?? []).map(({ id }) =>
-	// 				this.priceRepository.deletedPriceById(id, { transaction }),
-	// 			),
-	// 		);
-	//
-	// 		await this.stockPriceRepository.deleteByStockId(id, { transaction });
-	//
-	// 		await transaction.commit();
-	// 		return null;
-	// 	} catch (e) {
-	// 		await transaction.rollback();
-	//
-	// 		if (e instanceof HttpError) {
-	// 			throw new HttpError(e.statusCode, e.message, e.context);
-	// 		}
-	//
-	// 		throw new HttpError(500, (e as Error).message, 'StockService');
-	// 	}
-	// }
+	async delete(productId: string): Promise<null> {
+		const id: number = +productId;
+		const transaction = await this.postgresqlService.client.transaction();
+		try {
+			const currentProduct = await this.productRepository.getById(id, { transaction });
+
+			if (!currentProduct) {
+				throw new HttpError(404, `Product with this ID: ${id} is not exist`, 'ProductService');
+			}
+
+			await Promise.all(
+				(currentProduct?.stocks ?? []).map(async (stock) => {
+					await this.stockRepository.deletedById(stock.id, {
+						transaction,
+					});
+					await Promise.all(
+						(stock?.prices ?? []).map((price) =>
+							this.priceRepository.deletedPriceById(price.id, { transaction }),
+						),
+					);
+					await this.stockPricesRepository.deleteByStockId(stock.id, { transaction });
+				}),
+			);
+
+			await Promise.all(
+				(currentProduct?.images ?? []).map((image) =>
+					this.imageRepository.deleteImage(image.id, { transaction }),
+				),
+			);
+
+			await Promise.all(
+				(currentProduct?.images ?? []).map((image) =>
+					this.imageRepository.deleteImage(image.id, { transaction }),
+				),
+			);
+
+			await this.productStocksRepository.deleteByProductId(id, { transaction });
+			await this.productImagesRepository.deleteByProductId(id, { transaction });
+
+			await this.productRepository.deletedById(id, { transaction });
+
+			await transaction.commit();
+			return null;
+		} catch (e) {
+			await transaction.rollback();
+
+			if (e instanceof HttpError) {
+				throw new HttpError(e.statusCode, e.message, e.context);
+			}
+
+			throw new HttpError(500, (e as Error).message, 'StockService');
+		}
+	}
 }
