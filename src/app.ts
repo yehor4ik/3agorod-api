@@ -13,6 +13,7 @@ import cors from 'cors';
 import { ImageController } from './components/images/image.controller';
 import { PriceController } from './components/prices/price.controller';
 import { StockController } from './components/stocks/stock.controller';
+import { ProductController } from './components/product/product.controller';
 
 interface ICorsOptions {
 	origin: string;
@@ -36,6 +37,7 @@ export class App {
 		private readonly imageController: ImageController,
 		@inject(TYPES.PriceController) private readonly priceController: PriceController,
 		@inject(TYPES.StockController) private readonly stockController: StockController,
+		@inject(TYPES.ProductController) private readonly productController: ProductController,
 	) {
 		this.app = express();
 		this.port = 8000;
@@ -54,6 +56,7 @@ export class App {
 		this.app.use('/images', this.imageController.router);
 		this.app.use('/prices', this.priceController.router);
 		this.app.use('/stocks', this.stockController.router);
+		this.app.use('/products', this.productController.router);
 	}
 
 	useExceptionFilters(): void {

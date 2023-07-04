@@ -9,6 +9,9 @@ import { Image } from '../components/images/image.model';
 import { Price } from '../components/prices/price.model';
 import { Stock } from '../components/stocks/stock.model';
 import { StockPrices } from '../components/stock-prices/stock-price.model';
+import { Product } from '../components/product/product.model';
+import { ProductImages } from '../components/product-images/product-images.model';
+import { ProductStocks } from '../components/product-stocks/product-srocks.model';
 
 @injectable()
 export class PostgresqlService {
@@ -39,6 +42,9 @@ export class PostgresqlService {
 		this.initPriceModel();
 		this.initStockModel();
 		this.initStockPricesModel();
+		this.initProductModel();
+		this.initProductStocksModel();
+		this.initProductImagesModel();
 	}
 
 	async connect(): Promise<void> {
@@ -166,7 +172,6 @@ export class PostgresqlService {
 				currency: {
 					type: new DataTypes.ENUM('USD', 'EUR', 'UAH'),
 					allowNull: false,
-					unique: true,
 					validate: {
 						isIn: [['USD', 'EUR', 'UAH']],
 					},
@@ -198,7 +203,6 @@ export class PostgresqlService {
 				size: {
 					type: new DataTypes.ENUM('XS', 'S', 'M', 'L', 'XL'),
 					allowNull: false,
-					unique: true,
 					validate: {
 						isIn: [['XS', 'S', 'M', 'L', 'XL']],
 					},
@@ -245,5 +249,102 @@ export class PostgresqlService {
 		StockPrices.removeAttribute('id');
 		Stock.belongsToMany(Price, { through: StockPrices, as: 'prices' });
 		Price.belongsToMany(Stock, { through: StockPrices });
+	}
+
+	initProductModel(): void {
+		Product.init(
+			{
+				id: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					autoIncrement: true,
+					primaryKey: true,
+				},
+				name: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+				},
+				description: {
+					type: new DataTypes.TEXT(),
+					allowNull: false,
+				},
+				collectionId: {
+					type: DataTypes.INTEGER.UNSIGNED,
+					allowNull: false,
+				},
+				createdAt: DataTypes.DATE,
+				updatedAt: DataTypes.DATE,
+			},
+			{
+				underscored: true,
+				timestamps: true,
+				tableName: 'product',
+				sequelize: this.client,
+			},
+		);
+		Product.belongsTo(Collection, { foreignKey: 'collectionId', as: 'collection' });
+	}
+
+	initProductImagesModel(): void {
+		ProductImages.init(
+			{
+				productId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+					references: {
+						model: Product,
+						key: 'id',
+					},
+				},
+				imageId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+					references: {
+						model: Image,
+						key: 'id',
+					},
+				},
+			},
+			{
+				underscored: true,
+				tableName: 'product_images',
+				sequelize: this.client,
+				timestamps: false,
+			},
+		);
+		ProductImages.removeAttribute('id');
+		Product.belongsToMany(Image, { through: ProductImages, as: 'images' });
+		Image.belongsToMany(Product, { through: ProductImages });
+	}
+
+	initProductStocksModel(): void {
+		ProductStocks.init(
+			{
+				productId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+					references: {
+						model: Product,
+						key: 'id',
+					},
+				},
+				stockId: {
+					type: new DataTypes.INTEGER(),
+					allowNull: false,
+					references: {
+						model: Stock,
+						key: 'id',
+					},
+				},
+			},
+			{
+				underscored: true,
+				tableName: 'product_stocks',
+				sequelize: this.client,
+				timestamps: false,
+			},
+		);
+		ProductStocks.removeAttribute('id');
+		Product.belongsToMany(Stock, { through: ProductStocks, as: 'stocks' });
+		Stock.belongsToMany(Product, { through: ProductStocks });
 	}
 }

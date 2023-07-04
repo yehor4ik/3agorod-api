@@ -20,7 +20,7 @@ export class StockService implements IStockService {
 		private readonly stockPriceRepository: IStockPriceRepository,
 		@inject(TYPES.PostgresqlService) private readonly postgresqlService: PostgresqlService,
 	) {}
-	async create(dto: StockCreateDto): Promise<any> {
+	async create(dto: StockCreateDto): Promise<Stock> {
 		const transaction = await this.postgresqlService.client.transaction();
 
 		try {
@@ -66,7 +66,9 @@ export class StockService implements IStockService {
 				throw new HttpError(404, `Stock by this ID: ${id} is not found`, 'StockService');
 			}
 
-			const updatedStock = await this.stockRepository.update(currentStock, stockDto);
+			const updatedStock = await this.stockRepository.update(currentStock, stockDto, {
+				transaction,
+			});
 
 			if (!updatedStock.prices) {
 				throw new HttpError(500, `Server Error`, 'StockService');

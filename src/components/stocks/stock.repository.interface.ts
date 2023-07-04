@@ -7,6 +7,7 @@ import {
 	FindOptions,
 	InstanceUpdateOptions,
 } from 'sequelize/types/model';
+import { StockCreateDto } from './dto/stock-create.dto';
 
 export interface IStockRepository {
 	create: (
@@ -21,4 +22,8 @@ export interface IStockRepository {
 		options?: InstanceUpdateOptions<IStockCreationAttributes>,
 	) => Promise<Stock>;
 	deletedById: (stockId: number, options?: DestroyOptions<Attributes<Stock>>) => Promise<null>;
+	createMany: (
+		dto: StockCreateDto[],
+		options?: CreateOptions<Attributes<Stock>>,
+	) => Promise<Stock[]>;
 }
