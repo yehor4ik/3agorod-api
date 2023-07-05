@@ -14,6 +14,7 @@ import { ImageController } from './components/images/image.controller';
 import { PriceController } from './components/prices/price.controller';
 import { StockController } from './components/stocks/stock.controller';
 import { ProductController } from './components/product/product.controller';
+import { CronService } from './cron/cron.service';
 
 interface ICorsOptions {
 	origin: string;
@@ -38,6 +39,7 @@ export class App {
 		@inject(TYPES.PriceController) private readonly priceController: PriceController,
 		@inject(TYPES.StockController) private readonly stockController: StockController,
 		@inject(TYPES.ProductController) private readonly productController: ProductController,
+		@inject(TYPES.CronService) private readonly croneService: CronService,
 	) {
 		this.app = express();
 		this.port = 8000;
@@ -73,6 +75,7 @@ export class App {
 		this.useRoutes();
 		this.useExceptionFilters();
 		await this.postgresqlService.connect();
+		await this.croneService.initCronDeletingImages();
 		this.server = this.app.listen(this.port);
 		this.logger.log(`Server has been ran on the: http://localhost:${this.port}`);
 	}
