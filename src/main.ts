@@ -50,6 +50,7 @@ import { IProductService } from './components/product/product.service.interface'
 import { ProductService } from './components/product/product.service';
 import { IProductController } from './components/product/product.controller.interface';
 import { ProductController } from './components/product/product.controller';
+import { CronService } from './cron/cron.service';
 
 export interface IBootstrapReturn {
 	appContainer: Container;
@@ -82,6 +83,7 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IProductRepository>(TYPES.ProductRepository).to(ProductRepository);
 	bind<IProductService>(TYPES.ProductService).to(ProductService);
 	bind<IProductController>(TYPES.ProductController).to(ProductController);
+	bind<CronService>(TYPES.CronService).to(CronService);
 	bind<App>(TYPES.Application).to(App);
 });
 

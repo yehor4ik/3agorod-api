@@ -4,13 +4,15 @@ import { CollectionCreateDto } from './dto/collection-create.dto';
 import { Collection } from './collection.model';
 import { Image } from '../images/image.model';
 import { HttpError } from '../../errors/http-error.class';
+import { Attributes, FindOptions } from 'sequelize/types/model';
 
 @injectable()
 export class CollectionRepository implements ICollectionRepository {
-	async getAllCollections(): Promise<Collection[]> {
+	async getAllCollections(options?: FindOptions<Attributes<Collection>>): Promise<Collection[]> {
 		try {
 			const collections = await Collection.findAll({
 				include: [{ model: Image, as: 'backgroundImage' }],
+				...(options ?? {}),
 			});
 			return collections ?? [];
 		} catch (e) {

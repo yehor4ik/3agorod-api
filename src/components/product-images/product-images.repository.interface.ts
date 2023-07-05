@@ -1,4 +1,10 @@
-import { Attributes, CreateOptions, DestroyOptions, UpdateOptions } from 'sequelize/types/model';
+import {
+	Attributes,
+	CreateOptions,
+	DestroyOptions,
+	FindOptions,
+	UpdateOptions,
+} from 'sequelize/types/model';
 import { ProductImages } from './product-images.model';
 
 export interface IUpdateImageIdQuery {
@@ -15,6 +21,7 @@ export interface IProductImagesRepository {
 		query: IUpdateImageIdQuery,
 		options?: Omit<UpdateOptions<Attributes<ProductImages>>, 'where'>,
 	) => Promise<ProductImages>;
+	getAll: (options?: FindOptions<Attributes<ProductImages>>) => Promise<ProductImages[]>;
 	deleteByProductId: (
 		productId: number,
 		options?: DestroyOptions<Attributes<ProductImages>>,

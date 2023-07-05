@@ -1,6 +1,12 @@
 import { injectable } from 'inversify';
 import { HttpError } from '../../errors/http-error.class';
-import { Attributes, CreateOptions, DestroyOptions, UpdateOptions } from 'sequelize/types/model';
+import {
+	Attributes,
+	CreateOptions,
+	DestroyOptions,
+	FindOptions,
+	UpdateOptions,
+} from 'sequelize/types/model';
 import {
 	IProductImagesRepository,
 	IUpdateImageIdQuery,
@@ -53,6 +59,14 @@ export class ProductImagesRepository implements IProductImagesRepository {
 		try {
 			await ProductImages.destroy(currentOptions);
 			return null;
+		} catch (e) {
+			throw new HttpError(500, (e as Error).message, 'ProductImagesRepository');
+		}
+	}
+
+	async getAll(options?: FindOptions<Attributes<ProductImages>>): Promise<ProductImages[]> {
+		try {
+			return await ProductImages.findAll(options);
 		} catch (e) {
 			throw new HttpError(500, (e as Error).message, 'ProductImagesRepository');
 		}
