@@ -23,7 +23,7 @@ export class CronService {
 		@inject(TYPES.PostgresqlService) private readonly postgresqlService: PostgresqlService,
 	) {}
 	async initCronDeletingImages(): Promise<void> {
-		cron.schedule('*/1 * * * *', async () => {
+		cron.schedule('0 0 * * *', async () => {
 			const transaction = await this.postgresqlService.client.transaction();
 			try {
 				const collections = await this.collectionRepository.getAllCollections({ transaction });

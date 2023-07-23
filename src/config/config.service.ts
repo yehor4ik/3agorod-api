@@ -10,9 +10,9 @@ export class ConfigService implements IConfigService {
 	constructor(@inject(TYPES.ILogger) private logger: ILogger) {
 		const result: DotenvConfigOutput = config();
 		if (result.error) {
-			this.logger.error('[ConfigService] The .env file could not be read or is missed');
+			this.logger.error('[ConfigService] The .env.local file could not be read or is missed');
 		} else {
-			this.logger.log('[ConfigService] .env has benn loaded');
+			this.logger.log('[ConfigService] .env.local has benn loaded');
 			this.config = result.parsed as DotenvParseOutput;
 		}
 	}
