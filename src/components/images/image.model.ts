@@ -7,6 +7,7 @@ export class Image extends Model<InferAttributes<Image>, IImageImageCreationAttr
 	public url!: string;
 	public filename!: string;
 	public size!: number;
+	public mimetype!: string;
 	public readonly createdAt!: Date;
 	public readonly updatedAt!: Date;
 }

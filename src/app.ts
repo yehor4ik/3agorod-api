@@ -70,12 +70,12 @@ export class App {
 	}
 
 	public async init(): Promise<void> {
+		await this.postgresqlService.connect();
+		await this.croneService.initCronDeletingImages();
 		this.useMiddleware();
 		this.useCors();
 		this.useRoutes();
 		this.useExceptionFilters();
-		await this.postgresqlService.connect();
-		await this.croneService.initCronDeletingImages();
 		this.server = this.app.listen(this.port);
 		this.logger.log(`Server has been ran on the: http://localhost:${this.port}`);
 	}

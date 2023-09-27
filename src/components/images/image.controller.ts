@@ -14,6 +14,7 @@ import { HttpError } from '../../errors/http-error.class';
 import { NextFunction, Request, Response } from 'express';
 import multer, { Multer } from 'multer';
 import { Image } from './image.model';
+import { FileValidateMiddleware } from '../../common/file-validate.middleware';
 
 @injectable()
 export class ImageController extends BaseController implements IImageController {
@@ -43,7 +44,11 @@ export class ImageController extends BaseController implements IImageController 
 				method: 'post',
 				path: '/',
 				func: this.create,
-				middlewares: [new AuthMiddleware(secret), { execute: this.imageUpload.single('image') }],
+				middlewares: [
+					new AuthMiddleware(secret),
+					{ execute: this.imageUpload.single('image') },
+					new FileValidateMiddleware(),
+				],
 			},
 			{
 				method: 'get',

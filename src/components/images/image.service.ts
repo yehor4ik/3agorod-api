@@ -15,13 +15,14 @@ export class ImageService implements IImageService {
 		return path.join(dirname, '/public/images/' + fileName);
 	}
 
-	async createImage({ filename, size }: IFile): Promise<Image> {
+	async createImage({ filename, size, mimetype }: IFile): Promise<Image> {
 		const url = '/images/' + filename;
 
 		const dto: IImageImageCreationAttributes = {
 			url,
 			filename,
 			size,
+			mimetype,
 		};
 		const image = await this.imageRepository.createImage(dto);
 

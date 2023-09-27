@@ -144,6 +144,10 @@ export class PostgresqlService {
 					type: new DataTypes.INTEGER(),
 					allowNull: false,
 				},
+				mimetype: {
+					type: new DataTypes.STRING(255),
+					allowNull: false,
+				},
 				createdAt: DataTypes.DATE,
 				updatedAt: DataTypes.DATE,
 			},
