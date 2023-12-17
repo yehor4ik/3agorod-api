@@ -44,7 +44,7 @@ export class App {
 		this.app = express();
 		this.port = 8000;
 		this.corsOptions = {
-			origin: 'http://localhost:3000',
+			origin: 'http://localhost:8080',
 		};
 	}
 

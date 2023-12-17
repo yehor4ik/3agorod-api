@@ -7,13 +7,13 @@ export class FileValidateMiddleware implements IMiddleware {
 	private ALLOWED_FILES = ['png', 'jpeg', 'jpg', 'gif'];
 	private ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 
-	execute({ file }: Request, res: Response, next: NextFunction): void {
-		if (!this.isCorrectFileExtensions(file) || !this.isCorrectFileType(file)) {
+	execute(req: Request, res: Response, next: NextFunction): void {
+		if (!this.isCorrectFileExtensions(req.file) || !this.isCorrectFileType(req.file)) {
 			res.status(400).send({ err: 'The picture must have an extension: png, jpeg, jpg, gif' });
 			return;
 		}
 
-		if (this.isLargeSize(file)) {
+		if (this.isLargeSize(req.file)) {
 			res.status(413).send({ err: 'The picture must have an extension: png, jpeg, jpg, gif' });
 			return;
 		}
